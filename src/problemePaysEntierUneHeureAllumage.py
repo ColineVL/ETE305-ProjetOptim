@@ -3,9 +3,10 @@ import pulp
 import consommation
 from producteurs import tousProducteurs
 
-""" Problème version 1 """
+""" Problème version 2 """
 """ On ne considère pas l'interconnexion : on peut échanger tout ce qu'on veut entre le Sud et le Nord """
 """ Ce problème ne se déroule que sur une seule heure, on a une seule donnée de consommation """
+""" Cette fois on peut allumer et éteindre des unités d'un site de production """
 
 # Pendant une certaine heure
 # Chaque centrale a une certaine puissance
@@ -19,32 +20,40 @@ nbProducteurs = len(tousProducteurs)
 demande = consommation.consoTotale
 
 # On crée le problème de minimisation du coût
-problem = pulp.LpProblem("PaysEntier", pulp.LpMinimize)
+problem = pulp.LpProblem("PaysEntierAllumage", pulp.LpMinimize)
 
 # Les producteurs : on crée des variables pour chacun d'entre eux
-variables = [
-    pulp.LpVariable(prod.nomCentrale, prod.puissanceMin, prod.puissanceMax)
+variablesProd = [
+    pulp.LpVariable(prod.nomCentrale, 0, prod.puissanceMax) for prod in tousProducteurs
+]
+
+variablesOnOff = [
+    pulp.LpVariable(f"on_{prod.nomCentrale}", cat=pulp.LpBinary)
     for prod in tousProducteurs
 ]
 
 # On ajoute des contraintes
 for i in range(nbProducteurs):
-    problem += variables[i] >= tousProducteurs[i].puissanceMin
-    problem += variables[i] <= tousProducteurs[i].puissanceMax
+    problem += (
+        variablesProd[i] >= tousProducteurs[i].puissanceMin * variablesOnOff[i]
+    )  # if 'on' produce at least min
+    problem += (
+        variablesProd[i] <= tousProducteurs[i].puissanceMax * variablesOnOff[i]
+    )  # if 'on' produce at most max, if 'off' produce 0
 
-problem += sum(variables) >= demande
+problem += sum(variablesProd) >= demande
 
 
 # On définit l'objectif
 problem += sum(
-    variables[i] * tousProducteurs[i].coutMarginal for i in range(nbProducteurs)
+    variablesProd[i] * tousProducteurs[i].coutMarginal for i in range(nbProducteurs)
 )
 
 # On vérifie que pulp arrive à trouver une solution
 assert pulp.LpStatus[problem.solve()] == "Optimal"
 
 # On extrait la solution
-solution = [pulp.value(var) for var in variables]
+solution = [pulp.value(var) for var in variablesProd]
 
 # On affiche le résultat
 for i in range(nbProducteurs):
@@ -54,6 +63,8 @@ for i in range(nbProducteurs):
         remarque = ">> MAXIMUM"
     if solution[i] == prod.puissanceMin:
         remarque = "-- Minimum"
+    if solution[i] == 0.0:
+        remarque = "...eteint"
 
     print(f"Centrale {prod.nomCentrale} : {solution[i]} {remarque}")
 
