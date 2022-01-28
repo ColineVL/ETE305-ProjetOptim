@@ -2,7 +2,7 @@ import pulp
 import matplotlib.pyplot as plt
 import numpy as np
 
-demand = np.loadtxt("./src/electricMultiannualPlanning/demand.txt")
+demand = np.loadtxt("./references/electricMultiannualPlanning/demand.txt")
 
 costs = np.array([20, 40])
 power_max = np.array([400, 200])
