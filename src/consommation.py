@@ -9,3 +9,6 @@ consoTotale = consoNord + consoSud
 
 demand = np.loadtxt("./src/demand.txt")
 consoJournee = demand[:24]
+# On l'augmente sinon on voit aucun effet des fossiles
+for i in range(len(consoJournee)):
+    consoJournee[i] += 300
