@@ -73,3 +73,7 @@ for prod in tousProducteurs:
         producteursNord.append(prod)
     if prod.zone == "Sud":
         producteursSud.append(prod)
+
+
+capaciteIntercoNordSud = 0
+capaciteIntercoSudNord = 00

@@ -1,8 +1,14 @@
+from code import interact
 import pulp
 import matplotlib.pyplot as plt
 
 from consommation import consoJourneeNord, consoJourneeSud
-from producteurs import producteursNord, producteursSud
+from producteurs import (
+    producteursNord,
+    producteursSud,
+    capaciteIntercoNordSud,
+    capaciteIntercoSudNord,
+)
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """
@@ -47,6 +53,7 @@ variablesProd.append(
     ]
 )
 
+# On off : les usines peuvent s'éteindre
 variablesOnOff = []
 variablesOnOff.append(
     [
@@ -66,6 +73,17 @@ variablesOnOff.append(
         for prod in producteursSud
     ]
 )
+
+# Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
+# intercoNordSud[h] = le Nord envoie tant au Sud à l'heure h
+intercoNordSud = [
+    pulp.LpVariable(f"intercoNS_{h}", 0, capaciteIntercoNordSud)
+    for h in range(nbHeures)
+]
+intercoSudNord = [
+    pulp.LpVariable(f"intercoSN_{h}", 0, capaciteIntercoSudNord)
+    for h in range(nbHeures)
+]
 
 # On ajoute des contraintes : puissance minimum, maximum
 for h in range(nbHeures):
@@ -91,13 +109,19 @@ for h in range(nbHeures):
         )  # if 'on' produce at most max, if 'off' produce 0
 
 # Contrainte : il faut satisfaire la demande, à la fois au nord et au sud
+# Au Nord : à chaque heure, prodNord + intercoSN - intercoNS >= demandeNord
 for h in range(nbHeures):
     problem += (
         sum([variablesProd[0][i][h] for i in range(nbProducteursNord)])
+        + intercoSudNord[h]
+        - intercoNordSud[h]
         >= demandeNord[h]
     )
     problem += (
-        sum([variablesProd[1][i][h] for i in range(nbProducteursSud)]) >= demandeSud[h]
+        sum([variablesProd[1][i][h] for i in range(nbProducteursSud)])
+        - intercoSudNord[h]
+        + intercoNordSud[h]
+        >= demandeSud[h]
     )
 
 # Contrainte : si on allume, il faut rester allumé un certain temps
@@ -172,3 +196,7 @@ plt.plot(prodTotaleSud, label="Production totale Sud")
 plt.legend()
 
 plt.show()
+
+print(f"Cout total : {pulp.value(problem.objective)}")
+# Avec interco : 116333.00000000001
+# Sans interco : 116333.00000000004
