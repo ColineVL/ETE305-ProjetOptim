@@ -1,6 +1,6 @@
 import pulp
 
-import consommation
+import vieux.consommation as consommation
 from producteurs import tousProducteurs
 
 """ Problème version 1 """

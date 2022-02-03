@@ -1,7 +1,7 @@
 import pulp
 import matplotlib.pyplot as plt
 
-import consommation
+import vieux.consommation as consommation
 from producteurs import tousProducteurs
 
 """ Problème version 3 """
