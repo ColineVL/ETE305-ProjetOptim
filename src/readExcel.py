@@ -4,14 +4,15 @@ wb = load_workbook("./data/donnees optim sujet interco.xlsx")
 sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
-consoNord = [cell.value for cell in sheetNord["B"]]
-prodSolaireNord = [cell.value for cell in sheetNord["C"]]
 
-consoSud = [cell.value for cell in sheetSud["B"]]
-prodSolaireSud = [cell.value for cell in sheetSud["C"]]
-prodEolienSud = [cell.value for cell in sheetSud["D"]]
-prodHydroSud = [cell.value for cell in sheetSud["E"]]
-prodBioenergiesSud = [cell.value for cell in sheetSud["F"]]
+consoNord = [float(cell.value) for cell in sheetNord["B"][1:]]
+prodSolaireNord = [float(cell.value) for cell in sheetNord["C"][1:]]
+
+consoSud = [float(cell.value) for cell in sheetSud["B"][1:]]
+prodSolaireSud = [float(cell.value) for cell in sheetSud["C"][1:]]
+prodEolienSud = [float(cell.value) for cell in sheetSud["D"][1:]]
+prodHydroSud = [float(cell.value) for cell in sheetSud["E"][1:]]
+prodBioenergiesSud = [float(cell.value) for cell in sheetSud["F"][1:]]
 
 nbHeures = len(consoNord)
 

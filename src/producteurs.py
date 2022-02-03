@@ -1,15 +1,24 @@
-class Producteur:
+from readExcel import (
+    prodSolaireNord,
+    prodSolaireSud,
+    prodEolienSud,
+    prodHydroSud,
+    prodBioenergiesSud,
+)
+
+
+class ProducteurDispatchable:
     """
-    Représente un producteur d'électricité
+    Représente un producteur d'électricité d'origine fossile, dispatchable
 
     Attributes
     ----------
     zone : str
         "Nord" ou "Sud"
     centrale : str
-        Nom de la centrale, sans espace : "Bois_Rouge_1", "Hydraulique"...
+        Nom de la centrale, sans espace : "Bois_Rouge_1", "La Baie"...
     type : str
-        Type d'énergie : "charbon" ou "tac" ou "diesel" ou "renouvelable"
+        Type d'énergie : "charbon" ou "tac" ou "diesel"
     puissanceMax : int
         Puissance maximale de la centrale, en MW
     puissanceMin : int
@@ -33,47 +42,79 @@ class Producteur:
         self.dureeMinAllumage = dureeMinAllumage
 
 
-# Tableau regroupant tous les producteurs
-tousProducteurs = [
-    # Renouvelables
-    Producteur("Sud", "Hydraulique", "renouvelable", 134),
-    Producteur("Sud", "Solaire_Sud", "renouvelable", 115),
-    Producteur("Sud", "Bioenergies", "renouvelable", 4),
-    Producteur("Sud", "Eolien", "renouvelable", 16),
-    Producteur("Nord", "Solaire_Nord", "renouvelable", 58),
+class ProducteurFatal:
+    """
+    Représente un producteur d'électricité d'origine renouvelable.
+    On ne peut pas choisir la production, elle est donnée (par les conditions climatiques par exemple)
+
+    Attributes
+    ----------
+    zone : str
+        "Nord" ou "Sud"
+    centrale : str
+        Nom de la centrale, sans espace : "Hydraulique", "Solaire"...
+    production : array
+        Production au cours du temps, heure par heure
+    """
+
+    def __init__(self, zone, centrale, production):
+        self.nomCentrale = centrale
+        self.zone = zone
+        self.production = production
+
+
+# Tableau regroupant tous les producteurs d'origine fatal
+tousProducteursFatal = [
+    ProducteurFatal("Sud", "Hydraulique", prodHydroSud),
+    ProducteurFatal("Sud", "Solaire_Sud", prodSolaireSud),
+    ProducteurFatal("Sud", "Bioenergies", prodBioenergiesSud),
+    ProducteurFatal("Sud", "Eolien", prodEolienSud),
+    ProducteurFatal("Nord", "Solaire_Nord", prodSolaireNord),
 ]
 
-# On ajoute les thermiques : dans chaque site de production, il y a plusieurs groupes qui peuvent être activés indépendamment les uns des autres.
+# Tableau regroupant tous les producteurs dispatchables
+tousProducteursDispatchables = []
+# Dans chaque site de production, il y a plusieurs groupes qui peuvent être activés indépendamment les uns des autres.
 # Dans le range, le 1+3 signifie qu'il y a 3 groupes dans ce site de production
 for i in range(1, 1 + 3):
-    tousProducteurs.append(Producteur("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6))
+    tousProducteursDispatchables.append(
+        # TODO remettre ça : ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6)
+        ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 330000, 10, 6)
+    )
 for i in range(1, 1 + 3):
-    tousProducteurs.append(Producteur("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6))
+    tousProducteursDispatchables.append(
+        # TODO remettre ça : ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6)
+        ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37000, 10, 6)
+    )
 for i in range(1, 1 + 3):
-    tousProducteurs.append(Producteur("Nord", f"La_Baie_{i}", "tac", 40, 15, 1))
+    tousProducteursDispatchables.append(
+        ProducteurDispatchable("Nord", f"La_Baie_{i}", "tac", 40, 15, 1)
+    )
 for i in range(1, 1 + 3):
-    tousProducteurs.append(Producteur("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1))
+    tousProducteursDispatchables.append(
+        ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1)
+    )
 
 # Cout marginal, en € par MWh
-dataCoutMarginal = {"tac": 150, "diesel": 80, "charbon": 40, "renouvelable": 0}
+dataCoutMarginal = {"tac": 150, "diesel": 80, "charbon": 40}
 
 # On calcule le cout marginal de chaque site de production
-for prod in tousProducteurs:
+for prod in tousProducteursDispatchables:
     prod.coutMarginal = dataCoutMarginal[prod.type]
 
-# Juste en rappel
-capaTotale = sum([prod.puissanceMax for prod in tousProducteurs])
-
-
 # Division Nord / Sud
-producteursNord = []
-producteursSud = []
-for prod in tousProducteurs:
+producteursDispatchablesNord = []
+producteursDispatchablesSud = []
+for prod in tousProducteursDispatchables:
     if prod.zone == "Nord":
-        producteursNord.append(prod)
+        producteursDispatchablesNord.append(prod)
     if prod.zone == "Sud":
-        producteursSud.append(prod)
+        producteursDispatchablesSud.append(prod)
 
-
-capaciteIntercoNordSud = 0
-capaciteIntercoSudNord = 00
+producteursFatalNord = []
+producteursFatalSud = []
+for prod in tousProducteursFatal:
+    if prod.zone == "Nord":
+        producteursFatalNord.append(prod)
+    if prod.zone == "Sud":
+        producteursFatalSud.append(prod)
