@@ -63,3 +63,13 @@ for prod in tousProducteurs:
 
 # Juste en rappel
 capaTotale = sum([prod.puissanceMax for prod in tousProducteurs])
+
+
+# Division Nord / Sud
+producteursNord = []
+producteursSud = []
+for prod in tousProducteurs:
+    if prod.zone == "Nord":
+        producteursNord.append(prod)
+    if prod.zone == "Sud":
+        producteursSud.append(prod)
