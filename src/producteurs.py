@@ -78,13 +78,11 @@ tousProducteursDispatchables = []
 # Dans le range, le 1+3 signifie qu'il y a 3 groupes dans ce site de production
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        # TODO remettre ça : ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6)
-        ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 330000, 10, 6)
+        ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6)
     )
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        # TODO remettre ça : ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6)
-        ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37000, 10, 6)
+        ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6)
     )
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(

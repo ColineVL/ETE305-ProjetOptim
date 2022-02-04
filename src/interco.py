@@ -1,3 +1,3 @@
 # Interconnexion
-capaciteIntercoNordSud = 00
-capaciteIntercoSudNord = 00
+capaciteIntercoNordSud = 100
+capaciteIntercoSudNord = 100
