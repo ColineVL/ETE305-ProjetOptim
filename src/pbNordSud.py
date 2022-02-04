@@ -1,14 +1,8 @@
 import pulp
 import matplotlib.pyplot as plt
 
-from readExcel import consoSud, consoNord, nbHeures
-from producteurs import (
-    producteursDispatchablesNord,
-    producteursDispatchablesSud,
-    producteursFatalNord,
-    producteursFatalSud,
-)
-from interco import capaciteIntercoNordSud, capaciteIntercoSudNord, effacement
+from readExcel import nbHeures, effacement
+from zone import mesZones
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """
@@ -17,186 +11,114 @@ from interco import capaciteIntercoNordSud, capaciteIntercoSudNord, effacement
 """ On peut allumer et éteindre des unités d'un site de production """
 
 # La demande
-assert len(consoSud) == len(consoNord) == nbHeures
+assert len(mesZones["sud"].conso) == len(mesZones["nord"].conso) == nbHeures
 
 # On crée le problème de minimisation du coût
 problem = pulp.LpProblem("NordSudAnnee", pulp.LpMinimize)
 
-# Les producteurs dispatchables : on crée des variables pour chacun d'entre eux
-# On va obtenir une matrice :
-# variablesProd[x][i][h] = producteur i à l'heure h, avec x = 0 pour Nord, x = 1 pour Sud
-variablesProd = []
-variablesProd.append(
-    [
-        [
-            pulp.LpVariable(f"{prod.nomCentrale}_{h}", 0, prod.puissanceMax)
+
+""" Création des variables de production """
+
+for zone in mesZones.values():
+
+    # Les producteurs dispatchables : on crée des variables pour chacun d'entre eux
+    for prod in zone.producteursDispatchable:
+
+        # Chaque producteur a son tableau de variables :
+        # producteur.variablesProduction[h] = sa production à l'heure h
+        prod.variablesProduction = [
+            pulp.LpVariable(f"{prod.nomCentrale}_{zone.nom}_{h}", 0, prod.puissanceMax)
             for h in range(nbHeures)
         ]
-        for prod in producteursDispatchablesNord
-    ]
-)
-variablesProd.append(
-    [
-        [
-            pulp.LpVariable(f"{prod.nomCentrale}_{h}", 0, prod.puissanceMax)
+
+        # On crée aussi des variables OnOff :
+        # producteur.variablesOnOff[h] = est-il allumé à l'heure h ?
+        prod.variablesOnOff = [
+            pulp.LpVariable(f"on_{prod.nomCentrale}_{zone.nom}_{h}", cat=pulp.LpBinary)
             for h in range(nbHeures)
         ]
-        for prod in producteursDispatchablesSud
+
+    # Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
+    zone.intercoVersMoi = [
+        pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, zone.capaciteIntercoVersMoi)
+        for h in range(nbHeures)
     ]
-)
 
-# On off : les usines peuvent s'éteindre. Même format
-variablesOnOff = []
-variablesOnOff.append(
-    [
-        [
-            pulp.LpVariable(f"on_{prod.nomCentrale}_{h}", cat=pulp.LpBinary)
-            for h in range(nbHeures)
-        ]
-        for prod in producteursDispatchablesNord
-    ]
-)
-variablesOnOff.append(
-    [
-        [
-            pulp.LpVariable(f"on_{prod.nomCentrale}_{h}", cat=pulp.LpBinary)
-            for h in range(nbHeures)
-        ]
-        for prod in producteursDispatchablesSud
-    ]
-)
+""" Ajout de contraintes """
 
-# Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
-# intercoNordSud[h] = le Nord envoie tant au Sud à l'heure h
-intercoNordSud = [
-    pulp.LpVariable(f"intercoNS_{h}", 0, capaciteIntercoNordSud)
-    for h in range(nbHeures)
-]
-intercoSudNord = [
-    pulp.LpVariable(f"intercoSN_{h}", 0, capaciteIntercoSudNord)
-    for h in range(nbHeures)
-]
+for zone in mesZones.values():
+    for h in range(nbHeures):
 
-# On ajoute des contraintes : puissance minimum, maximum
-for h in range(nbHeures):
-    zone = 0  # Nord
-    for i in range(len(producteursDispatchablesNord)):
-        problem += (
-            variablesProd[zone][i][h]
-            >= producteursDispatchablesNord[i].puissanceMin * variablesOnOff[zone][i][h]
-        )  # if 'on' produce at least min
-        problem += (
-            variablesProd[zone][i][h]
-            <= producteursDispatchablesNord[i].puissanceMax * variablesOnOff[zone][i][h]
-        )  # if 'on' produce at most max, if 'off' produce 0
-    zone = 1  # Sud
-    for i in range(len(producteursDispatchablesSud)):
-        problem += (
-            variablesProd[zone][i][h]
-            >= producteursDispatchablesSud[i].puissanceMin * variablesOnOff[zone][i][h]
-        )  # if 'on' produce at least min
-        problem += (
-            variablesProd[zone][i][h]
-            <= producteursDispatchablesSud[i].puissanceMax * variablesOnOff[zone][i][h]
-        )  # if 'on' produce at most max, if 'off' produce 0
-
-# Contrainte : il faut satisfaire la demande, à la fois au nord et au sud
-# Au Nord : à chaque heure, prodNordDisp + prodNordFatal + intercoSN - intercoNS >= demandeNord
-for h in range(nbHeures):
-    problem += (
-        sum([variablesProd[0][i][h] for i in range(len(producteursDispatchablesNord))])
-        + sum(prod.production[h] for prod in producteursFatalNord)
-        + intercoSudNord[h]
-        - intercoNordSud[h]
-        + effacement
-        >= consoNord[h]
-    )
-    problem += (
-        sum([variablesProd[1][i][h] for i in range(len(producteursDispatchablesSud))])
-        + sum([prod.production[h] for prod in producteursFatalSud])
-        - intercoSudNord[h]
-        + intercoNordSud[h]
-        + effacement
-        >= consoSud[h]
-    )
-
-# Contrainte : si on allume, il faut rester allumé un certain temps
-# Au Nord
-zone = 0
-for i in range(len(producteursDispatchablesNord)):
-    dureeMin = producteursDispatchablesNord[i].dureeMinAllumage
-    if dureeMin > 1:
-        minsteps = dureeMin
-        for h in range(1, nbHeures):
-            min_effectif = min(minsteps, nbHeures - h)
+        # Contrainte de puissance minimum, maximum
+        for prod in zone.producteursDispatchable:
             problem += (
-                variablesOnOff[zone][i][h] - variablesOnOff[zone][i][h - 1]
-            ) * min_effectif <= sum(
-                variablesOnOff[zone][i][j] for j in range(h, h + min_effectif)
-            )
-# Au Sud
-zone = 1
-for i in range(len(producteursDispatchablesSud)):
-    dureeMin = producteursDispatchablesSud[i].dureeMinAllumage
-    if dureeMin > 1:
-        minsteps = dureeMin
-        for h in range(1, nbHeures):
-            min_effectif = min(minsteps, nbHeures - h)
+                prod.variablesProduction[h]
+                >= prod.puissanceMin * prod.variablesOnOff[h]
+            )  # if 'on' produce at least min
             problem += (
-                variablesOnOff[zone][i][h] - variablesOnOff[zone][i][h - 1]
-            ) * min_effectif <= sum(
-                variablesOnOff[zone][i][j] for j in range(h, h + min_effectif)
-            )
+                prod.variablesProduction[h]
+                <= prod.puissanceMax * prod.variablesOnOff[h]
+            )  # if 'on' produce at most max, if 'off' produce 0
 
+        # Contrainte de satisfaction de la demande
+        problem += (
+            sum(prod.variablesProduction[h] for prod in zone.producteursDispatchable)
+            + sum(prod.production[h] for prod in zone.producteursFatal)
+            + zone.intercoVersMoi[h]
+            - mesZones["sud" if zone.nom == "Nord" else "nord"].intercoVersMoi[h]
+            + effacement
+            >= zone.conso[h]
+        )
 
-# On définit l'objectif
-somme = 0
-for h in range(nbHeures):
-    for i in range(len(producteursDispatchablesNord)):
-        somme += variablesProd[0][i][h] * producteursDispatchablesNord[i].coutMarginal
-    for i in range(len(producteursDispatchablesSud)):
-        somme += variablesProd[1][i][h] * producteursDispatchablesSud[i].coutMarginal
-problem += somme
+    # Contrainte d'allumage : il faut rester allumé un certain temps minimum
+    for prod in zone.producteursDispatchable:
+        minsteps = prod.dureeMinAllumage
+        if minsteps > 1:
+            for h in range(1, nbHeures):
+                min_effectif = min(minsteps, nbHeures - h)
+                problem += (
+                    prod.variablesOnOff[h] - prod.variablesOnOff[h - 1]
+                ) * min_effectif <= sum(
+                    prod.variablesOnOff[t] for t in range(h, h + min_effectif)
+                )
+
+""" Définition de l'objectif """
+
+# On veut réduire le coût de l'électricité
+problem += sum(zone.calculerCoutProductionZone() for zone in mesZones.values())
+
+""" Résolution du problème """
 
 # On vérifie que pulp arrive à trouver une solution
 assert pulp.LpStatus[problem.solve()] == "Optimal"
 
-# On extrait la solution
-# solutions[i] = évolution de la prod sur nbHeures du producteur i, array de nbHeures valeurs
-solutionsNord = [
-    [pulp.value(var[h]) for h in range(nbHeures)] for var in variablesProd[0]
-]
-solutionsSud = [
-    [pulp.value(var[h]) for h in range(nbHeures)] for var in variablesProd[1]
-]
+""" Post-traitement """
 
-# On affiche le résultat
-# Au Nord
-plt.figure("tous les producteurs dispatchables nord")
-plt.plot(consoNord, "b", label="Demande Nord")
+# On extrait la solution du problème, on la range dans nos producteurs
+for zone in mesZones.values():
+    for prod in zone.producteursDispatchable:
+        prod.solutionProduction = [
+            pulp.value(prod.variablesProduction[h]) for h in range(nbHeures)
+        ]
 
-for i in range(len(producteursDispatchablesNord)):
-    plt.plot(solutionsNord[i], label=producteursDispatchablesNord[i].nomCentrale)
+# On affiche le résultat, dans chaque zone les productions de chaque producteur
+for zone in mesZones.values():
+    plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
+    plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
+    for prod in zone.producteursDispatchable:
+        plt.plot(prod.solutionProduction, label=prod.nomCentrale)
+    plt.legend()
 
-plt.legend()
-
-# Au Sud
-
-# Comparer demande et prod
-plt.figure("comparer demande et prod")
-plt.plot(consoNord, "b", label="Demande Nord")
-plt.plot(consoSud, "r", label="Demande Sud")
-prodTotaleNord = [
-    sum([solutionsNord[i][h] for i in range(len(producteursDispatchablesNord))])
-    for h in range(nbHeures)
-]
-plt.plot(prodTotaleNord, label="Production totale Nord")
-prodTotaleSud = [
-    sum([solutionsSud[i][h] for i in range(len(producteursDispatchablesSud))])
-    for h in range(nbHeures)
-]
-plt.plot(prodTotaleSud, label="Production totale Sud")
-plt.legend()
+# On compare la demande et la production, sur les deux zones en même temps
+plt.figure("Comparer demande et production")
+for zone in mesZones.values():
+    plt.plot(zone.conso, label=f"Demande {zone.nom}")
+    prodTotale = [
+        sum(prod.solutionProduction[h] for prod in zone.producteursDispatchable)
+        for h in range(nbHeures)
+    ]
+    plt.plot(prodTotale, label=f"Production totale {zone.nom}")
+    plt.legend()
 
 plt.show()
 

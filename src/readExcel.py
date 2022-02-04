@@ -4,8 +4,8 @@ wb = load_workbook("./data/donnees optim sujet interco.xlsx")
 sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
-nbHeures = len(sheetNord["B"])
-# nbHeures = 24 * 30  # 1 mois
+# nbHeures = len(sheetNord["B"])
+nbHeures = 24 * 30  # 1 mois
 
 consoNord = [float(cell.value) for cell in sheetNord["B"][1:nbHeures]]
 prodSolaireNord = [float(cell.value) for cell in sheetNord["C"][1:nbHeures]]
@@ -27,3 +27,11 @@ assert (
     == len(prodHydroSud)
     == len(prodBioenergiesSud)
 )
+
+""" Quelques données en plus """
+# Interconnexion
+capaciteIntercoNordSud = 100
+capaciteIntercoSudNord = 100
+
+# Effacement autorisé
+effacement = 20  # MW
