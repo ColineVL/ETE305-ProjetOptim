@@ -52,6 +52,9 @@ class ProducteurDispatchable:
         self.variablesOnOff = []
         self.solutionProduction = []
 
+    def calculerCoutProduction(self):
+        return sum(self.variablesProduction) * self.coutMarginal
+
 
 class ProducteurFatal:
     """

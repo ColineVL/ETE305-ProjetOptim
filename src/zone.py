@@ -35,6 +35,11 @@ class Zone:
         self.capaciteIntercoVersMoi = capaciteIntercoVersMoi
         self.intercoVersMoi = []
 
+    def calculerCoutProductionZone(self):
+        return sum(
+            prod.calculerCoutProduction() for prod in self.producteursDispatchable
+        )
+
 
 zoneNord = Zone("Nord", consoNord, capaciteIntercoSudNord)
 zoneSud = Zone("Sud", consoSud, capaciteIntercoNordSud)
