@@ -6,6 +6,8 @@ from readExcel import (
     prodBioenergiesSud,
 )
 
+dataCoutMarginal = {"tac": 150, "diesel": 80, "charbon": 40}
+
 
 class ProducteurDispatchable:
     """
@@ -28,6 +30,12 @@ class ProducteurDispatchable:
         Si on allume la centrale, elle doit rester allumer pendant un certain temps
     coutMarginal : int
         Cout d'utilisation de la centrale par mégawatt et par heure, donc en € / MWh
+    variablesProduction : array[pulp.LpVariable]
+        Tableau de variables pulp : variablesProduction[h] = production à l'heure h
+    variablesOnOff : array[pulp.LpVariable]
+        Tableau de variables pulp binaires : variablesOnOff[h] = True => à l'heure h l'usine est allumée
+    solutionProduction : array[float]
+        Rempli après la résolution du problème. Quantité de production à chaque heure
     """
 
     def __init__(
@@ -38,8 +46,11 @@ class ProducteurDispatchable:
         self.zone = zone
         self.puissanceMax = puissanceMax
         self.puissanceMin = puissanceMin
-        self.coutMarginal = 0
+        self.coutMarginal = dataCoutMarginal[type]
         self.dureeMinAllumage = dureeMinAllumage
+        self.variablesProduction = []
+        self.variablesOnOff = []
+        self.solutionProduction = []
 
 
 class ProducteurFatal:
@@ -62,6 +73,8 @@ class ProducteurFatal:
         self.zone = zone
         self.production = production
 
+
+""" Il est temps de créer nos producteurs"""
 
 # Tableau regroupant tous les producteurs d'origine fatal
 tousProducteursFatal = [
@@ -92,27 +105,3 @@ for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
         ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1)
     )
-
-# Cout marginal, en € par MWh
-dataCoutMarginal = {"tac": 150, "diesel": 80, "charbon": 40}
-
-# On calcule le cout marginal de chaque site de production
-for prod in tousProducteursDispatchables:
-    prod.coutMarginal = dataCoutMarginal[prod.type]
-
-# Division Nord / Sud
-producteursDispatchablesNord = []
-producteursDispatchablesSud = []
-for prod in tousProducteursDispatchables:
-    if prod.zone == "Nord":
-        producteursDispatchablesNord.append(prod)
-    if prod.zone == "Sud":
-        producteursDispatchablesSud.append(prod)
-
-producteursFatalNord = []
-producteursFatalSud = []
-for prod in tousProducteursFatal:
-    if prod.zone == "Nord":
-        producteursFatalNord.append(prod)
-    if prod.zone == "Sud":
-        producteursFatalSud.append(prod)
