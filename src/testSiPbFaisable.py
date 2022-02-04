@@ -5,16 +5,16 @@ from readExcel import nbHeures, effacement
 
 for h in range(nbHeures):
     capaciteDispNord = sum(
-        [prod.puissanceMax for prod in mesZones["nord"].producteursDispatchable]
+        prod.puissanceMax for prod in mesZones["nord"].producteursDispatchable
     )
     capaciteDispSud = sum(
-        [prod.puissanceMax for prod in mesZones["sud"].producteursDispatchable]
+        prod.puissanceMax for prod in mesZones["sud"].producteursDispatchable
     )
     productionFatalNord = sum(
-        [prod.production[h] for prod in mesZones["nord"].producteursFatal]
+        prod.production[h] for prod in mesZones["nord"].producteursFatal
     )
     productionFatalSud = sum(
-        [prod.production[h] for prod in mesZones["sud"].producteursFatal]
+        prod.production[h] for prod in mesZones["sud"].producteursFatal
     )
     totalNord = capaciteDispNord + productionFatalNord
     totalSud = capaciteDispSud + productionFatalSud
