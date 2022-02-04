@@ -119,18 +119,32 @@ for h in range(nbHeures):
     )
 
 # Contrainte : si on allume, il faut rester allumé un certain temps
-# for i in range(nbProducteurs):
-#     dureeMin = tousProducteurs[i].dureeMinAllumage
-#     if dureeMin > 1:
-#         for h in range(1, nbHeures - (dureeMin - 2)):
-#             # Pour dureeMin = 6:
-#             # A h, si h-1 est allumé, on fait ce qu'on veut
-#             # Si h-1 est éteint et que parmi h+1, h+2, h+3 ou h+4 à un moment on est éteint,
-#             # alors il faut être éteint à h
-#             # En gros si à h-1 on est à 0 et que une fois dans h+1, h+2, h+3 ou h+4 on est à 0, alors il faut être à 0
-#             # Donc [h-1] <= 4 + [h-1] - [h+1] - [h+2] - [h+3] - [h+4]
-#             somme = sum([variablesOnOff[i][h + x] for x in range(1, (dureeMin - 1))])
-#             problem += variablesOnOff[i][h] <= variablesOnOff[i][h - 1] + 4 - somme
+# Au Nord
+zone = 0
+for i in range(len(producteursDispatchablesNord)):
+    dureeMin = producteursDispatchablesNord[i].dureeMinAllumage
+    if dureeMin > 1:
+        minsteps = dureeMin
+        for h in range(1, nbHeures):
+            min_effectif = min(minsteps, nbHeures - h)
+            problem += (
+                variablesOnOff[zone][i][h] - variablesOnOff[zone][i][h - 1]
+            ) * min_effectif <= sum(
+                variablesOnOff[zone][i][j] for j in range(h, h + min_effectif)
+            )
+# Au Sud
+zone = 1
+for i in range(len(producteursDispatchablesSud)):
+    dureeMin = producteursDispatchablesSud[i].dureeMinAllumage
+    if dureeMin > 1:
+        minsteps = dureeMin
+        for h in range(1, nbHeures):
+            min_effectif = min(minsteps, nbHeures - h)
+            problem += (
+                variablesOnOff[zone][i][h] - variablesOnOff[zone][i][h - 1]
+            ) * min_effectif <= sum(
+                variablesOnOff[zone][i][j] for j in range(h, h + min_effectif)
+            )
 
 
 # On définit l'objectif
@@ -185,6 +199,4 @@ plt.legend()
 plt.show()
 
 print(f"Cout total : {pulp.value(problem.objective)}")
-# Avec interco : 91256623.56612028
-# Sans interco : 91256944.56756029
-# -> 300€ de différence sur l'année, c'est rien
+# Sur 100h interco : 10627214.780000005
