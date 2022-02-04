@@ -8,7 +8,7 @@ from producteurs import (
     producteursFatalNord,
     producteursFatalSud,
 )
-from interco import capaciteIntercoNordSud, capaciteIntercoSudNord
+from interco import capaciteIntercoNordSud, capaciteIntercoSudNord, effacement
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """
@@ -108,6 +108,7 @@ for h in range(nbHeures):
         + sum(prod.production[h] for prod in producteursFatalNord)
         + intercoSudNord[h]
         - intercoNordSud[h]
+        + effacement
         >= consoNord[h]
     )
     problem += (
@@ -115,6 +116,7 @@ for h in range(nbHeures):
         + sum([prod.production[h] for prod in producteursFatalSud])
         - intercoSudNord[h]
         + intercoNordSud[h]
+        + effacement
         >= consoSud[h]
     )
 
@@ -200,3 +202,4 @@ plt.show()
 
 print(f"Cout total : {pulp.value(problem.objective)}")
 # Sur 100h interco : 10627214.780000005
+# Sur l'année :      89424079.8299998

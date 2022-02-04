@@ -5,7 +5,7 @@ from producteurs import (
     producteursFatalNord,
     producteursFatalSud,
 )
-from interco import capaciteIntercoNordSud, capaciteIntercoSudNord
+from interco import capaciteIntercoNordSud, capaciteIntercoSudNord, effacement
 
 # On vérifie que chaque heure il y a moyen de répondre à la demande
 
@@ -31,7 +31,8 @@ for h in range(nbHeures):
         surplus = totalNord - demandeNord
         if surplus > capaciteIntercoNordSud:
             surplus = capaciteIntercoNordSud
-        if surplus >= deficit:
+        # On autorise un effacement
+        if surplus + effacement >= deficit:
             # c'est validé
             ok = 1
         else:
@@ -47,7 +48,8 @@ for h in range(nbHeures):
         deficit = totalNord - demandeNord
         if surplus > capaciteIntercoSudNord:
             surplus = capaciteIntercoSudNord
-        if surplus >= deficit:
+        # On autorise un effacement
+        if surplus + effacement >= deficit:
             # c'est validé
             ok = 1
         else:
