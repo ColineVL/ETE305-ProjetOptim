@@ -2,8 +2,6 @@
 
 ### Par Coline
 
-Nouvelle contrainte : pour pouvoir allumer le fioul, il faut d'abord avoir allumé le charbon
-
 Surcoût à l'allumage
 
 ### Avec tout le monde

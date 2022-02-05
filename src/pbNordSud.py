@@ -70,6 +70,21 @@ for zone in mesZones.values():
             >= zone.conso[h]
         )
 
+        # Contrainte de coût, on allume dans l'ordre :
+        # Pour pouvoir allumer les TAC, il faut que tous les diesels soient on
+        # Pour pouvoir allumer les diesels, il faut que tous les charbons soient on
+        for prod in zone.producteursDispatchable:
+            if prod.donnerMeilleursTypes():
+                # Il faut que toutes les usines moins chères soient on
+                producteursMieux = [
+                    prod2
+                    for prod2 in zone.producteursDispatchable
+                    if prod2.type in prod.donnerMeilleursTypes()
+                ]
+                problem += len(producteursMieux) * prod.variablesOnOff[h] <= sum(
+                    prod3.variablesOnOff[h] for prod3 in producteursMieux
+                )
+
     # Contrainte d'allumage : il faut rester allumé un certain temps minimum
     for prod in zone.producteursDispatchable:
         minsteps = prod.dureeMinAllumage
@@ -123,5 +138,5 @@ for zone in mesZones.values():
 plt.show()
 
 print(f"Cout total : {pulp.value(problem.objective)}")
-# Sur 100h interco : 10627214.780000005
 # Sur l'année :      89424079.8299998
+# Sur l'année, v2 :  89303374.12999941

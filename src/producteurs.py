@@ -55,6 +55,13 @@ class ProducteurDispatchable:
     def calculerCoutProduction(self):
         return sum(self.variablesProduction) * self.coutMarginal
 
+    def donnerMeilleursTypes(self):
+        return [
+            type
+            for type in dataCoutMarginal
+            if dataCoutMarginal[type] < self.coutMarginal
+        ]
+
 
 class ProducteurFatal:
     """
