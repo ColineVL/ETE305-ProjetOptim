@@ -2,7 +2,6 @@
 
 ### Par Coline
 
-Surcoût à l'allumage
 
 ### Avec tout le monde
 

@@ -30,6 +30,8 @@ class ProducteurDispatchable:
         Si on allume la centrale, elle doit rester allumer pendant un certain temps
     coutMarginal : int
         Cout d'utilisation de la centrale par mégawatt et par heure, donc en € / MWh
+    coutAllumage : int
+        Cout d'allumage de la centrale, en €
     variablesProduction : array[pulp.LpVariable]
         Tableau de variables pulp : variablesProduction[h] = production à l'heure h
     variablesOnOff : array[pulp.LpVariable]
@@ -39,7 +41,14 @@ class ProducteurDispatchable:
     """
 
     def __init__(
-        self, zone, centrale, type, puissanceMax, puissanceMin=0, dureeMinAllumage=0
+        self,
+        zone,
+        centrale,
+        type,
+        puissanceMax,
+        puissanceMin,
+        dureeMinAllumage,
+        coutAllumage,
     ):
         self.type = type
         self.nomCentrale = centrale
@@ -51,6 +60,7 @@ class ProducteurDispatchable:
         self.variablesProduction = []
         self.variablesOnOff = []
         self.solutionProduction = []
+        self.coutAllumage = coutAllumage
 
     def calculerCoutProduction(self):
         return sum(self.variablesProduction) * self.coutMarginal
@@ -101,17 +111,17 @@ tousProducteursDispatchables = []
 # Dans le range, le 1+3 signifie qu'il y a 3 groupes dans ce site de production
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6)
+        ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6, 50000)
     )
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6)
+        ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6, 50000)
     )
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        ProducteurDispatchable("Nord", f"La_Baie_{i}", "tac", 40, 15, 1)
+        ProducteurDispatchable("Nord", f"La_Baie_{i}", "tac", 40, 15, 1, 2000)
     )
 for i in range(1, 1 + 3):
     tousProducteursDispatchables.append(
-        ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1)
+        ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1, 1000)
     )
