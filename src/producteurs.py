@@ -96,8 +96,8 @@ class ProducteurFatal:
 
 """ Il est temps de créer nos producteurs"""
 
-# Tableau regroupant tous les producteurs d'origine fatal
-tousProducteursFatal = [
+# Tableau regroupant tous les producteurs, d'abord ceux d'origine fatal
+tousProducteurs = [
     ProducteurFatal("Sud", "Hydraulique", prodHydroSud),
     ProducteurFatal("Sud", "Solaire_Sud", prodSolaireSud),
     ProducteurFatal("Sud", "Bioenergies", prodBioenergiesSud),
@@ -105,23 +105,22 @@ tousProducteursFatal = [
     ProducteurFatal("Nord", "Solaire_Nord", prodSolaireNord),
 ]
 
-# Tableau regroupant tous les producteurs dispatchables
-tousProducteursDispatchables = []
+# On ajoute les dispatchables
 # Dans chaque site de production, il y a plusieurs groupes qui peuvent être activés indépendamment les uns des autres.
 # Dans le range, le 1+3 signifie qu'il y a 3 groupes dans ce site de production
 for i in range(1, 1 + 3):
-    tousProducteursDispatchables.append(
+    tousProducteurs.append(
         ProducteurDispatchable("Sud", f"Bois_Rouge_{i}", "charbon", 33, 10, 6, 50000)
     )
 for i in range(1, 1 + 3):
-    tousProducteursDispatchables.append(
+    tousProducteurs.append(
         ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6, 50000)
     )
-for i in range(1, 1 + 3):
-    tousProducteursDispatchables.append(
+for i in range(1, 1 + 2):
+    tousProducteurs.append(
         ProducteurDispatchable("Nord", f"La_Baie_{i}", "tac", 40, 15, 1, 2000)
     )
-for i in range(1, 1 + 3):
-    tousProducteursDispatchables.append(
+for i in range(1, 1 + 12):
+    tousProducteurs.append(
         ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1, 1000)
     )
