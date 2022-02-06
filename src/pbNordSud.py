@@ -2,7 +2,7 @@ import pulp
 
 from display import affichageResultats
 from readExcel import nbHeures, capaciteIntercoInitiale
-from bornesMax import capaciteIntercoMax, coutAugmentationInterco
+from bornesMax import capaciteIntercoMax, coutAugmentationInterco, effacement
 from zone import mesZones
 
 """ Problème version 4 """
@@ -73,6 +73,7 @@ for zone in mesZones.values():
             + sum(prod.production[h] for prod in zone.producteursFatal)
             + zone.intercoVersMoi[h]
             - mesZones["Sud" if zone.nom == "Nord" else "Nord"].intercoVersMoi[h]
+            + effacement
             >= zone.conso[h]
         )
 

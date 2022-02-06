@@ -1,26 +1,27 @@
 from zone import mesZones
-from readExcel import nbHeures
+from readExcel import nbHeures, capaciteIntercoInitiale
+from bornesMax import effacement
 
 # On vérifie que chaque heure il y a moyen de répondre à la demande
 
 for h in range(nbHeures):
     capaciteDispNord = sum(
-        prod.puissanceMax for prod in mesZones["nord"].producteursDispatchable
+        prod.puissanceMax for prod in mesZones["Nord"].producteursDispatchable
     )
     capaciteDispSud = sum(
-        prod.puissanceMax for prod in mesZones["sud"].producteursDispatchable
+        prod.puissanceMax for prod in mesZones["Sud"].producteursDispatchable
     )
     productionFatalNord = sum(
-        prod.production[h] for prod in mesZones["nord"].producteursFatal
+        prod.production[h] for prod in mesZones["Nord"].producteursFatal
     )
     productionFatalSud = sum(
-        prod.production[h] for prod in mesZones["sud"].producteursFatal
+        prod.production[h] for prod in mesZones["Sud"].producteursFatal
     )
     totalNord = capaciteDispNord + productionFatalNord
     totalSud = capaciteDispSud + productionFatalSud
 
-    demandeNord = mesZones["nord"].conso[h]
-    demandeSud = mesZones["sud"].conso[h]
+    demandeNord = mesZones["Nord"].conso[h]
+    demandeSud = mesZones["Sud"].conso[h]
 
     if totalSud >= demandeSud and totalNord >= demandeNord:
         # premier cas : pas besoin d'interconnexion
@@ -31,9 +32,10 @@ for h in range(nbHeures):
         # On vérifie que l'interconnexion suffit à combler le déficit
         deficit = demandeSud - totalSud
         surplus = totalNord - demandeNord
-        if surplus > mesZones["sud"].capaciteIntercoVersMoi:
-            surplus = mesZones["sud"].capaciteIntercoVersMoi
-        if surplus >= deficit:
+        if surplus > capaciteIntercoInitiale:
+            surplus = capaciteIntercoInitiale
+        # On autorise un effacement
+        if surplus + effacement >= deficit:
             # c'est validé
             ok = 1
         else:
@@ -47,9 +49,10 @@ for h in range(nbHeures):
         # On vérifie que l'interconnexion suffit à combler le déficit
         surplus = demandeSud - totalSud
         deficit = totalNord - demandeNord
-        if surplus > mesZones["nord"].capaciteIntercoVersMoi:
-            surplus = mesZones["nord"].capaciteIntercoVersMoi
-        if surplus >= deficit:
+        if surplus > capaciteIntercoInitiale:
+            surplus = capaciteIntercoInitiale
+        # On autorise un effacement
+        if surplus + effacement >= deficit:
             # c'est validé
             ok = 1
         else:
