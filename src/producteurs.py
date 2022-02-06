@@ -116,11 +116,11 @@ for i in range(1, 1 + 3):
     tousProducteurs.append(
         ProducteurDispatchable("Nord", f"Le_Gol_{i}", "charbon", 37, 10, 6, 50000)
     )
-for i in range(1, 1 + 3):
+for i in range(1, 1 + 2):
     tousProducteurs.append(
         ProducteurDispatchable("Nord", f"La_Baie_{i}", "tac", 40, 15, 1, 2000)
     )
-for i in range(1, 1 + 3):
+for i in range(1, 1 + 12):
     tousProducteurs.append(
         ProducteurDispatchable("Nord", f"Le_Port_Est_{i}", "diesel", 18, 0, 1, 1000)
     )
