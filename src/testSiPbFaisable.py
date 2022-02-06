@@ -1,5 +1,5 @@
 from zone import mesZones
-from readExcel import nbHeures, effacement
+from readExcel import nbHeures
 
 # On vérifie que chaque heure il y a moyen de répondre à la demande
 
@@ -33,8 +33,7 @@ for h in range(nbHeures):
         surplus = totalNord - demandeNord
         if surplus > mesZones["sud"].capaciteIntercoVersMoi:
             surplus = mesZones["sud"].capaciteIntercoVersMoi
-        # On autorise un effacement
-        if surplus + effacement >= deficit:
+        if surplus >= deficit:
             # c'est validé
             ok = 1
         else:
@@ -50,8 +49,7 @@ for h in range(nbHeures):
         deficit = totalNord - demandeNord
         if surplus > mesZones["nord"].capaciteIntercoVersMoi:
             surplus = mesZones["nord"].capaciteIntercoVersMoi
-        # On autorise un effacement
-        if surplus + effacement >= deficit:
+        if surplus >= deficit:
             # c'est validé
             ok = 1
         else:

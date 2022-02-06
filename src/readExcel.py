@@ -38,6 +38,3 @@ assert (
 """ Quelques données en plus """
 # Interconnexion
 capaciteIntercoInitiale = 100  # MW, valable dans les deux sens
-
-# Effacement autorisé
-effacement = 20  # MW

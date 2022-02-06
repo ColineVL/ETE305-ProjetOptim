@@ -1,7 +1,7 @@
 import pulp
 
 from display import affichageResultats
-from readExcel import nbHeures, effacement, capaciteIntercoInitiale
+from readExcel import nbHeures, capaciteIntercoInitiale
 from bornesMax import capaciteIntercoMax, coutAugmentationInterco
 from zone import mesZones
 
@@ -41,12 +41,13 @@ for zone in mesZones.values():
 
     # Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
     # D'abord on crée une variable pour une borne max
-    zone.capaciteIntercoVersMoi = pulp.LpVariable(
-        f"max_interco_vers_{zone.nom}", capaciteIntercoInitiale, capaciteIntercoMax
-    )
+    # zone.capaciteIntercoVersMoi = pulp.LpVariable(
+    #     f"max_interco_vers_{zone.nom}", capaciteIntercoInitiale, capaciteIntercoMax
+    # )
     # Ensuite on crée les valeurs d'interco heure par heure
     zone.intercoVersMoi = [
-        pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, zone.capaciteIntercoVersMoi)
+        # pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, zone.capaciteIntercoVersMoi)
+        pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, capaciteIntercoInitiale)
         for h in range(nbHeures)
     ]
 
@@ -71,8 +72,7 @@ for zone in mesZones.values():
             sum(prod.variablesProduction[h] for prod in zone.producteursDispatchable)
             + sum(prod.production[h] for prod in zone.producteursFatal)
             + zone.intercoVersMoi[h]
-            - mesZones["sud" if zone.nom == "Nord" else "nord"].intercoVersMoi[h]
-            + effacement
+            - mesZones["Sud" if zone.nom == "Nord" else "Nord"].intercoVersMoi[h]
             >= zone.conso[h]
         )
 
@@ -118,10 +118,10 @@ for zone in mesZones.values():
 # Cout d'utilisation de carburant
 coutTotal += sum(zone.calculerCoutProductionZone() for zone in mesZones.values())
 # On a augmenté l'interco
-coutTotal += sum(
-    (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
-    for zone in mesZones.values()
-)
+# coutTotal += sum(
+#     (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
+#     for zone in mesZones.values()
+# )
 # Fonction objectif
 problem += coutTotal
 
@@ -140,8 +140,8 @@ for zone in mesZones.values():
         ]
 
 # Affichage de l'interco max
-for zone in mesZones.values():
-    print(f"Interco vers {zone.nom} : { pulp.value(zone.capaciteIntercoVersMoi)}")
+# for zone in mesZones.values():
+#     print(f"Interco vers {zone.nom} : { pulp.value(zone.capaciteIntercoVersMoi)}")
 
 # Quelques plots
 affichageResultats(mesZones, nbHeures)
