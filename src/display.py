@@ -2,12 +2,23 @@ import matplotlib.pyplot as plt
 
 
 def affichageResultats(mesZones, nbHeures):
-    # On affiche le résultat, dans chaque zone les productions de chaque producteur
+    # # On affiche le résultat, dans chaque zone les productions de chaque producteur
+    # for zone in mesZones.values():
+    #     plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
+    #     plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
+    #     for prod in zone.producteursDispatchable:
+    #         plt.plot(prod.solutionProduction, label=prod.nomCentrale)
+    #     plt.legend()
+    
     for zone in mesZones.values():
         plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
+        TotalSum = [0.] * nbHeures
         for prod in zone.producteursDispatchable:
-            plt.plot(prod.solutionProduction, label=prod.nomCentrale)
+            for h in range(nbHeures - 1):
+                TotalSum[h] += prod.solutionProduction[h]
+            plt.plot(TotalSum,label=prod.nomCentrale)
+            # plt.fill(TotalSum,label=prod.nomCentrale)      
         plt.legend()
 
     # On compare la demande et la production, sur les deux zones en même temps
