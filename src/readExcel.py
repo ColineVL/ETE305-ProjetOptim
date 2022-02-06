@@ -37,8 +37,7 @@ assert (
 
 """ Quelques données en plus """
 # Interconnexion
-capaciteIntercoNordSud = 100
-capaciteIntercoSudNord = 100
+capaciteIntercoInitiale = 100  # MW, valable dans les deux sens
 
 # Effacement autorisé
 effacement = 20  # MW
