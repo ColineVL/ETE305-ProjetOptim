@@ -41,13 +41,12 @@ for zone in mesZones.values():
 
     # Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
     # D'abord on crée une variable pour une borne max
-    # zone.capaciteIntercoVersMoi = pulp.LpVariable(
-    #     f"max_interco_vers_{zone.nom}", capaciteIntercoInitiale, capaciteIntercoMax
-    # )
+    zone.capaciteIntercoVersMoi = pulp.LpVariable(
+        f"max_interco_vers_{zone.nom}", capaciteIntercoInitiale, capaciteIntercoMax
+    )
     # Ensuite on crée les valeurs d'interco heure par heure
     zone.intercoVersMoi = [
-        # pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, zone.capaciteIntercoVersMoi)
-        pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, capaciteIntercoInitiale)
+        pulp.LpVariable(f"interco_vers_{zone.nom}_{h}", 0, capaciteIntercoMax)
         for h in range(nbHeures)
     ]
 
@@ -66,6 +65,9 @@ for zone in mesZones.values():
                 prod.variablesProduction[h]
                 <= prod.puissanceMax * prod.variablesOnOff[h]
             )  # if 'on' produce at most max, if 'off' produce 0
+
+        # Contrainte d'interconnexion maximale : la capacité d'interconnexion effective doit être réaliste
+        problem += zone.intercoVersMoi[h] <= zone.capaciteIntercoVersMoi
 
         # Contrainte de satisfaction de la demande
         problem += (
@@ -119,10 +121,10 @@ for zone in mesZones.values():
 # Cout d'utilisation de carburant
 coutTotal += sum(zone.calculerCoutProductionZone() for zone in mesZones.values())
 # On a augmenté l'interco
-# coutTotal += sum(
-#     (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
-#     for zone in mesZones.values()
-# )
+coutTotal += sum(
+    (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
+    for zone in mesZones.values()
+)
 # Fonction objectif
 problem += coutTotal
 
@@ -141,12 +143,10 @@ for zone in mesZones.values():
         ]
 
 # Affichage de l'interco max
-# for zone in mesZones.values():
-#     print(f"Interco vers {zone.nom} : { pulp.value(zone.capaciteIntercoVersMoi)}")
+for zone in mesZones.values():
+    print(f"Interco vers {zone.nom} : { pulp.value(zone.capaciteIntercoVersMoi)}")
 
 # Quelques plots
 affichageResultats(mesZones, nbHeures)
 
 print(f"Cout total : {pulp.value(problem.objective)}")
-# Sur l'année :      89424079.8299998
-# Sur l'année, v2 :  89303374.12999941
