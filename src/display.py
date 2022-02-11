@@ -58,7 +58,7 @@ def affichageResultats(mesZones, nbHeures):
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
 
         #Interco
-        plt.fill_between(range(nbHeures),0,IntercoZone,color = 'b',label =f"Interconnexion")
+        plt.fill_between(range(nbHeures),0,IntercoZone,color = 'cyan',label =f"Interconnexion")
 
         #Production Fatal
         Niveau1 =[
@@ -87,7 +87,8 @@ def affichageResultats(mesZones, nbHeures):
             for h in range(nbHeures)
         ]
         plt.fill_between(range(nbHeures),Niveau3,Niveau4,color = 'orange',label =f"Charbon")
-        plt.fill_between(range(nbHeures),0.01,-0.01,color = 'b')
+        # plt.fill_between(range(nbHeures),-0.01,0.01,color = 'white')
+        plt.axhline(linewidth=1, color = 'black',linestyle='--')
         plt.legend()    
     
 
