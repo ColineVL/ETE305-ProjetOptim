@@ -9,17 +9,30 @@ def affichageResultats(mesZones, nbHeures):
     #     for prod in zone.producteursDispatchable:
     #         plt.plot(prod.solutionProduction, label=prod.nomCentrale)
     #     plt.legend()
-    
+         
     for zone in mesZones.values():
         plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
+
+        # Demande
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
-        TotalSum = [0.] * nbHeures
+
+        # # Energie renouvelable
+        # RenewSum = [0.]
+        # for h in range(nbHeures):
+        #     RenewSum.append(sum(prod.production[h] for prod in zone.producteursFatal))
+        # plt.plot(zone.productionFatal)
+
+
+        # Producteur Dispatchable + Interconnexion
+        ProdSum = [0.] * nbHeures
         for prod in zone.producteursDispatchable:
-            for h in range(nbHeures - 1):
-                TotalSum[h] += prod.solutionProduction[h]
-            plt.plot(TotalSum,label=prod.nomCentrale)
-            # plt.fill(TotalSum,label=prod.nomCentrale)      
+            for h in range(nbHeures):
+                ProdSum[h] += prod.solutionProduction[h] + zone.solutionIntercoVersMoi[h] - mesZones["Sud" if zone.nom == "Nord" else "Nord"].solutionIntercoVersMoi[h] +zone.productionFatal[h]
+            plt.plot(ProdSum,label=prod.nomCentrale)
+            # plt.fill(TotalSum,label=prod.nomCentrale)
+            # plt.fill_between(ProdSum,interpolate=True)
         plt.legend()
+
 
     # On compare la demande et la production, sur les deux zones en même temps
     plt.figure("Comparer demande et production")

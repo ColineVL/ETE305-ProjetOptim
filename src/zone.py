@@ -1,5 +1,5 @@
 from producteurs import tousProducteurs
-from readExcel import consoNord, consoSud
+from readExcel import consoNord, consoSud,nbHeures
 from bornesMax import facteurAugmentationConso
 
 class Zone:
@@ -45,6 +45,7 @@ class Zone:
             sum(
                 prod.production[h] for prod in self.producteursFatal
             )
+            for h in range(nbHeures)
         ]
 
 
@@ -61,5 +62,5 @@ for prod in tousProducteurs:
         zone.producteursFatal.append(prod)  # C'est un fatal
 
 # Calcul fatal
-for zone in mesZones:
+for zone in mesZones.values():
     zone.calculerProductionFatal()
