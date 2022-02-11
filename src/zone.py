@@ -1,6 +1,6 @@
 from producteurs import tousProducteurs
 from readExcel import consoNord, consoSud
-
+from bornesMax import facteurAugmentationConso
 
 class Zone:
     """
@@ -35,8 +35,8 @@ class Zone:
         )
 
 
-zoneNord = Zone("Nord", consoNord)
-zoneSud = Zone("Sud", consoSud)
+zoneNord = Zone("Nord", consoNord*facteurAugmentationConso)
+zoneSud = Zone("Sud", consoSud*facteurAugmentationConso)
 mesZones = {"Nord": zoneNord, "Sud": zoneSud}
 
 # Division Nord / Sud des producteurs

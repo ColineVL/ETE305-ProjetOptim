@@ -2,7 +2,7 @@ import pulp
 
 from display import affichageResultats
 from readExcel import nbHeures, capaciteIntercoInitiale
-from bornesMax import capaciteIntercoMax, coutAugmentationInterco, effacement
+from bornesMax import capaciteIntercoMax, coutAugmentationInterco, effacement, budgetTotal
 from zone import mesZones
 
 """ Problème version 4 """
@@ -106,9 +106,16 @@ for zone in mesZones.values():
                     prod.variablesOnOff[t] for t in range(h, h + min_effectif)
                 )
 
+""" Contrainte : respect du budget """
+# On a augmenté l'interco
+problem += sum(
+    (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
+    for zone in mesZones.values()
+) <= budgetTotal
+
 """ Définition de l'objectif """
 # On veut réduire le coût de l'électricité
-coutTotal = 0
+coutProduction = 0
 # Quand les usines s'allument, ça coute de l'argent
 for zone in mesZones.values():
     for prod in zone.producteursDispatchable:
@@ -117,16 +124,11 @@ for zone in mesZones.values():
                 prod.variablesProduction[h] == 0
                 and prod.variablesProduction[h + 1] == 1
             ):
-                coutTotal += prod.coutAllumage
+                coutProduction += prod.coutAllumage
 # Cout d'utilisation de carburant
-coutTotal += sum(zone.calculerCoutProductionZone() for zone in mesZones.values())
-# On a augmenté l'interco
-coutTotal += sum(
-    (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale) * coutAugmentationInterco
-    for zone in mesZones.values()
-)
+coutProduction += sum(zone.calculerCoutProductionZone() for zone in mesZones.values())
 # Fonction objectif
-problem += coutTotal
+problem += coutProduction
 
 """ Résolution du problème """
 
