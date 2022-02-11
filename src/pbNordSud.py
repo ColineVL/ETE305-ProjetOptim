@@ -37,7 +37,7 @@ for zone in mesZones.values():
         prod.variablesOnOff = [
             pulp.LpVariable(f"on_{prod.nomCentrale}_{zone.nom}_{h}", cat=pulp.LpBinary)
             for h in range(nbHeures)
-        ]
+        ]  
 
     # Interconnexion : le Sud peut envoyer de l'électricité au Nord et inversement
     # D'abord on crée une variable pour une borne max
