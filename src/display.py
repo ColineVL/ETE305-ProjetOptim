@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import pulp
 
 
 def affichageResultats(mesZones, nbHeures):
@@ -17,27 +16,21 @@ def affichageResultats(mesZones, nbHeures):
         # Demande
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
 
-        # Energie renouvelable
-        RenewSum = [0.]
-        for h in range(nbHeures):
-            RenewSum.append(sum(prod.production[h] for prod in zone.producteursFatal))
-        plt.plot(RenewSum)
-
-        for zone in mesZones.values():
-            for prod in zone.producteursDispatchable:
-                prod.solutionInterco = [
-                    pulp.value(prod.capaciteIntercoVersMoi[h]) for h in range(nbHeures)
-                ]
+        # # Energie renouvelable
+        # RenewSum = [0.]
+        # for h in range(nbHeures):
+        #     RenewSum.append(sum(prod.production[h] for prod in zone.producteursFatal))
+        # plt.plot(zone.productionFatal)
 
 
         # Producteur Dispatchable + Interconnexion
         ProdSum = [0.] * nbHeures
         for prod in zone.producteursDispatchable:
             for h in range(nbHeures):
-                ProdSum[h] += prod.solutionProduction[h] + zone.solutionInterco[h] - mesZones["sud" if zone.nom == "Nord" else "nord"].solutionInterco[h]
+                ProdSum[h] += prod.solutionProduction[h] + zone.solutionIntercoVersMoi[h] - mesZones["Sud" if zone.nom == "Nord" else "Nord"].solutionIntercoVersMoi[h] +zone.productionFatal[h]
             plt.plot(ProdSum,label=prod.nomCentrale)
             # plt.fill(TotalSum,label=prod.nomCentrale)
-            plt.fill_between(ProdSum,interpolate=True)
+            # plt.fill_between(ProdSum,interpolate=True)
         plt.legend()
 
 
