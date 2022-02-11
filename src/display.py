@@ -49,44 +49,57 @@ def affichageResultats(mesZones, nbHeures):
             )
             for h in range(nbHeures)
         ]
-       
+        
 
+        ## Plot
+        plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
 
-        # # Producteur Dispatchable + Interconnexion
-        # ProdSum = [0.] * nbHeures
-        # SolutionInterco = [0.] * nbHeures
-        # for prod in zone.producteursDispatchable:
-        #     for h in range(nbHeures):
-        #         SolutionInterco[h] =  zone.solutionIntercoVersMoi[h] - mesZones["Sud" if zone.nom == "Nord" else "Nord"].solutionIntercoVersMoi[h]
-        #         ProdSum[h] += prod.solutionProduction[h] + SolutionInterco[h] +zone.productionFatal[h]
-        #     plt.plot(ProdSum,label=prod.nomCentrale)
-        #     # plt.fill(TotalSum,label=prod.nomCentrale)
-        #     # plt.fill_between(ProdSum,interpolate=True)
-        # plt.legend()
+        # Demande
+        plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
 
+        #Interco
+        plt.fill_between(range(nbHeures),0,IntercoZone,color = 'b',label =f"Interconnexion")
 
-    # # On compare la demande et la production, sur les deux zones en même temps
-    # plt.figure("Comparer demande et production")
-    # for zone in mesZones.values():
-    #     plt.plot(zone.conso, label=f"Demande {zone.nom}")
-    #     prodTotale = [
-    #         sum(prod.solutionProduction[h] for prod in zone.producteursDispatchable)
-    #         for h in range(nbHeures)
-    #     ]
-    #     plt.plot(prodTotale, label=f"Production totale {zone.nom}")
-    #     plt.legend()
+        #Production Fatal
+        Niveau1 =[
+            IntercoZone[h] + zone.productionFatal[h]
+            for h in range(nbHeures)
+        ]
+        plt.fill_between(range(nbHeures),IntercoZone,Niveau1,color ='red',label =f"Production Fatal")
+        
+        #TAC
+        Niveau2 =[
+            IntercoZone[h] + zone.productionFatal[h] + tac[h]
+            for h in range(nbHeures)
+        ]
+        plt.fill_between(range(nbHeures),Niveau1,Niveau2,color = 'green',label =f"TAC")
 
+        #Diesel
+        Niveau3 =[
+            IntercoZone[h] + zone.productionFatal[h] + tac[h] + diesel[h]
+            for h in range(nbHeures)
+        ]
+        plt.fill_between(range(nbHeures),Niveau2,Niveau3,color = 'yellow',label =f"Diesel")
 
-    plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
+        #Charbon
+        Niveau4 =[
+            IntercoZone[h] + zone.productionFatal[h] + tac[h] + diesel[h] + charbon[h]
+            for h in range(nbHeures)
+        ]
+        plt.fill_between(range(nbHeures),Niveau3,Niveau4,color = 'orange',label =f"Charbon")
+        plt.fill_between(range(nbHeures),0.01,-0.01,color = 'b')
+        plt.legend()    
+    
 
-    # Demande
-    plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
-    plt.plot(IntercoZone,label =f"IntercoZone")
-    Niveau1 =[
-        IntercoZone[h] + zone.productionFatal[h]
-        for h in range(nbHeures)
-    ]
-    plt.fill_between(range(nbHeures),IntercoZone,Niveau1,color = 'red',label =f"Production Fatal")
+        # On compare la demande et la production, sur les deux zones en même temps
+    plt.figure("Comparer demande et production")
+    for zone in mesZones.values():
+        plt.plot(zone.conso, label=f"Demande {zone.nom}")
+        prodTotale = [
+            sum(prod.solutionProduction[h] for prod in zone.producteursDispatchable)
+            for h in range(nbHeures)
+        ]
+        plt.plot(prodTotale, label=f"Production totale {zone.nom}")
+        plt.legend() 
 
-
-    plt.show()
+    plt.show()   
