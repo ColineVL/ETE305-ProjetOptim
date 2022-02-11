@@ -7,8 +7,8 @@ sheetSud = wb[wb.sheetnames[2]]
 
 
 # nbHeures = len(sheetNord["B"])
-# nbHeures = 24 * 30  # 1 mois
-nbHeures = 24
+nbHeures = 24 * 30  # 1 mois
+# nbHeures = 24
 
 def cleanValue(value):
     if value < 0:
