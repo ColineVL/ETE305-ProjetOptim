@@ -143,6 +143,11 @@ for zone in mesZones.values():
         prod.solutionProduction = [
             pulp.value(prod.variablesProduction[h]) for h in range(nbHeures)
         ]
+for zone in mesZones.values():
+    zone.solutionIntercoVersMoi = [
+        pulp.value(zone.intercoVersMoi[h]) for h in range(nbHeures)
+    ]
+    
 
 # Affichage de l'interco max
 for zone in mesZones.values():
