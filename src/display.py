@@ -10,7 +10,7 @@ def affichageResultats(mesZones, nbHeures):
     #     for prod in zone.producteursDispatchable:
     #         plt.plot(prod.solutionProduction, label=prod.nomCentrale)
     #     plt.legend()
-    
+         
     for zone in mesZones.values():
         plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
 
