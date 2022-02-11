@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pulp
 
 
 def affichageResultats(mesZones, nbHeures):
@@ -12,14 +13,33 @@ def affichageResultats(mesZones, nbHeures):
     
     for zone in mesZones.values():
         plt.figure(f"Tous les producteurs dispatchables {zone.nom}")
+
+        # Demande
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom}")
-        TotalSum = [0.] * nbHeures
+
+        # Energie renouvelable
+        RenewSum = [0.]
+        for h in range(nbHeures):
+            RenewSum.append(sum(prod.production[h] for prod in zone.producteursFatal))
+        plt.plot(RenewSum)
+
+        for zone in mesZones.values():
+            for prod in zone.producteursDispatchable:
+                prod.solutionInterco = [
+                    pulp.value(prod.capaciteIntercoVersMoi[h]) for h in range(nbHeures)
+                ]
+
+
+        # Producteur Dispatchable + Interconnexion
+        ProdSum = [0.] * nbHeures
         for prod in zone.producteursDispatchable:
-            for h in range(nbHeures - 1):
-                TotalSum[h] += prod.solutionProduction[h]
-            plt.plot(TotalSum,label=prod.nomCentrale)
-            # plt.fill(TotalSum,label=prod.nomCentrale)      
+            for h in range(nbHeures):
+                ProdSum[h] += prod.solutionProduction[h] + zone.solutionInterco[h] - mesZones["sud" if zone.nom == "Nord" else "nord"].solutionInterco[h]
+            plt.plot(ProdSum,label=prod.nomCentrale)
+            # plt.fill(TotalSum,label=prod.nomCentrale)
+            plt.fill_between(ProdSum,interpolate=True)
         plt.legend()
+
 
     # On compare la demande et la production, sur les deux zones en même temps
     plt.figure("Comparer demande et production")
