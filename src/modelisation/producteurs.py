@@ -79,13 +79,16 @@ class ProducteurFatal:
         Nord ou Sud
     centrale : str
         Nom de la centrale, sans espace : "Hydraulique", "Solaire"...
+    type : TypeEnergie
+        Type d'énergie : HYDRO ou EOLIEN ou BIOENERGIES ou SOLAIRE
     production : array
         Production au cours du temps, heure par heure
     """
 
-    def __init__(self, zone, centrale, production):
+    def __init__(self, zone, centrale, type, production):
         self.nomCentrale = centrale
         self.zone = zone
+        self.type = type
         self.production = production
 
 
@@ -93,37 +96,26 @@ class ProducteurFatal:
 
 # Tableau regroupant tous les producteurs, d'abord ceux d'origine fatal
 tousProducteurs = [
-    ProducteurFatal(ZoneName.SUD, "Hydraulique", prodHydroSud),
-    ProducteurFatal(ZoneName.SUD, "Solaire_Sud", prodSolaireSud),
-    ProducteurFatal(ZoneName.SUD, "Bioenergies", prodBioenergiesSud),
-    ProducteurFatal(ZoneName.SUD, "Eolien", prodEolienSud),
-    ProducteurFatal(ZoneName.NORD, "Solaire_Nord", prodSolaireNord),
+    ProducteurFatal(ZoneName.SUD, "Hydraulique", TypeEnergie.HYDRO, prodHydroSud),
+    ProducteurFatal(ZoneName.SUD, "Solaire_Sud", TypeEnergie.SOLAIRE, prodSolaireSud),
+    ProducteurFatal(
+        ZoneName.SUD, "Bioenergies", TypeEnergie.BIOENERGIES, prodBioenergiesSud
+    ),
+    ProducteurFatal(ZoneName.SUD, "Eolien", TypeEnergie.EOLIEN, prodEolienSud),
+    ProducteurFatal(
+        ZoneName.NORD, "Solaire_Nord", TypeEnergie.SOLAIRE, prodSolaireNord
+    ),
 ]
 
 # On ajoute les dispatchables
 # Dans chaque site de production, il y a plusieurs groupes qui peuvent être activés indépendamment les uns des autres.
 # Dans le range, le 1+3 signifie qu'il y a 3 groupes dans ce site de production
-for i in range(1, 1 + 3):
-    tousProducteurs.append(
-        ProducteurDispatchable(
-            ZoneName.SUD, f"Bois_Rouge_{i}", TypeEnergie.CHARBON, 33, 10, 6, 50000
-        )
-    )
-for i in range(1, 1 + 3):
-    tousProducteurs.append(
-        ProducteurDispatchable(
-            ZoneName.NORD, f"Le_Gol_{i}", TypeEnergie.CHARBON, 37, 10, 6, 50000
-        )
-    )
-for i in range(1, 1 + 2):
-    tousProducteurs.append(
-        ProducteurDispatchable(
-            ZoneName.NORD, f"La_Baie_{i}", TypeEnergie.TAC, 40, 15, 1, 2000
-        )
-    )
-for i in range(1, 1 + 12):
-    tousProducteurs.append(
-        ProducteurDispatchable(
-            ZoneName.NORD, f"Le_Port_Est_{i}", TypeEnergie.DIESEL, 18, 0, 1, 1000
-        )
-    )
+def creer(nombre, zone, nom, *autres):
+    for i in range(1, 1 + nombre):
+        tousProducteurs.append(ProducteurDispatchable(zone, f"{nom}_{i}", *autres))
+
+
+creer(3, ZoneName.SUD, "Bois_Rouge", TypeEnergie.CHARBON, 33, 10, 6, 50000)
+creer(3, ZoneName.NORD, "Le_Gol", TypeEnergie.CHARBON, 37, 10, 6, 50000)
+creer(2, ZoneName.NORD, "La_Baie", TypeEnergie.TAC, 40, 15, 1, 2000)
+creer(12, ZoneName.NORD, "Le_Port_Est", TypeEnergie.DIESEL, 18, 0, 1, 1000)

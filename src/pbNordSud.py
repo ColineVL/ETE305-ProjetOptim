@@ -3,7 +3,7 @@ import pulp
 from postTraitementFiles.postTraitement import traitementResultats
 from readExcel import nbHeures, capaciteIntercoInitiale
 from modelisation.zones import mesZones, ZoneName
-import ourValues
+import modelisation.ourValues as ourValues
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """

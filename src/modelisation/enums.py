@@ -14,6 +14,14 @@ class TypeEnergie(Enum):
     TAC = 150
     DIESEL = 80
     CHARBON = 40
+    SOLAIRE = auto()
+    HYDRO = auto()
+    EOLIEN = auto()
+    BIOENERGIES = auto()
 
     def meilleursTypes(self):
-        return [type for type in TypeEnergie if type.value < self.value]
+        return [
+            type
+            for type in [TypeEnergie.TAC, TypeEnergie.DIESEL, TypeEnergie.CHARBON]
+            if type.value < self.value
+        ]
