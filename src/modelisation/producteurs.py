@@ -1,4 +1,4 @@
-from enums import TypeEnergie, ZoneName
+from modelisation.enums import TypeEnergie, ZoneName
 from readExcel import (
     prodSolaireNord,
     prodSolaireSud,

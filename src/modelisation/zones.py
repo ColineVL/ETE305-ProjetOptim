@@ -1,5 +1,5 @@
-from enums import ZoneName
-from producteurs import ProducteurDispatchable, tousProducteurs
+from modelisation.enums import ZoneName
+from modelisation.producteurs import ProducteurDispatchable, tousProducteurs
 from readExcel import consoNord, consoSud, nbHeures
 
 

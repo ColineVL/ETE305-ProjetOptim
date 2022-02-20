@@ -43,5 +43,5 @@ def writeResultsInExcel(mesZones, nbHeures):
             )
 
     timestamp = datetime.now().strftime("%d%m%Y-%H%M%S")
-    dest_filename = f"src/postTraitementFiles/results_{timestamp}.xlsx"
+    dest_filename = f"results/results_{timestamp}.xlsx"
     wb.save(filename=dest_filename)

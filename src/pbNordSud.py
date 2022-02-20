@@ -2,7 +2,7 @@ import pulp
 
 from postTraitementFiles.postTraitement import traitementResultats
 from readExcel import nbHeures, capaciteIntercoInitiale
-from zone import mesZones, ZoneName
+from modelisation.zones import mesZones, ZoneName
 import ourValues
 
 """ Problème version 4 """
