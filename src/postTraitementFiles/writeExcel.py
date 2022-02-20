@@ -1,7 +1,7 @@
 from openpyxl import Workbook
 from datetime import datetime
 
-from readExcel import dates
+from modelisation.readExcel import dates
 
 
 def writeResultsInExcel(mesZones, nbHeures):

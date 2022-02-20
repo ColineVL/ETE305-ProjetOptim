@@ -1,7 +1,7 @@
 import pulp
 
 from postTraitementFiles.postTraitement import traitementResultats
-from readExcel import nbHeures, capaciteIntercoInitiale
+from modelisation.readExcel import nbHeures, capaciteIntercoInitiale
 from modelisation.zones import mesZones, ZoneName
 import modelisation.ourValues as ourValues
 

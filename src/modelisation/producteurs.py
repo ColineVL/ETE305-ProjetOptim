@@ -1,5 +1,5 @@
 from modelisation.enums import TypeEnergie, ZoneName
-from readExcel import (
+from modelisation.readExcel import (
     prodSolaireNord,
     prodSolaireSud,
     prodEolienSud,

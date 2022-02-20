@@ -1,6 +1,6 @@
 from modelisation.enums import ZoneName
 from modelisation.producteurs import ProducteurDispatchable, tousProducteurs
-from readExcel import consoNord, consoSud, nbHeures
+from modelisation.readExcel import consoNord, consoSud, nbHeures
 
 
 class Zone:
