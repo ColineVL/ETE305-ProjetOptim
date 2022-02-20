@@ -1,5 +1,6 @@
 import pulp
 from postTraitementFiles.display import affichageResultats
+from postTraitementFiles import writeExcel
 
 
 def traitementResultats(problem, mesZones, nbHeures):
@@ -13,6 +14,9 @@ def traitementResultats(problem, mesZones, nbHeures):
         zone.solutionIntercoVersMoi = [
             pulp.value(zone.intercoVersMoi[h]) for h in range(nbHeures)
         ]
+
+    # On note les solutions dans un fichier excel
+    writeExcel.writeResultsInExcel(mesZones, nbHeures)
 
     print(f"Cout total : {pulp.value(problem.objective)}")
 

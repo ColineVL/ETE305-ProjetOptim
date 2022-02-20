@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from enums import TypeEnergie
+from modelisation.enums import TypeEnergie
 
 
 def affichageResultats(mesZones, nbHeures):

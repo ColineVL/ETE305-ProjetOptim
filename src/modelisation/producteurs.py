@@ -1,4 +1,4 @@
-from enums import TypeEnergie, ZoneName
+from modelisation.enums import TypeEnergie, ZoneName
 from readExcel import (
     prodSolaireNord,
     prodSolaireSud,
@@ -16,7 +16,7 @@ class ProducteurDispatchable:
     ----------
     zone : ZoneName
         Nord ou Sud
-    centrale : str
+    nomCentrale : str
         Nom de la centrale, sans espace : "Bois_Rouge_1", "La Baie"...
     type : TypeEnergie
         Type d'énergie : charbon ou tac ou diesel
@@ -42,7 +42,7 @@ class ProducteurDispatchable:
     def __init__(
         self,
         zone,
-        centrale,
+        nomCentrale,
         type,
         puissanceMax,
         puissanceMin,
@@ -50,7 +50,7 @@ class ProducteurDispatchable:
         coutAllumage,
     ):
         self.type = type
-        self.nomCentrale = centrale
+        self.nomCentrale = nomCentrale
         self.zone = zone
         self.puissanceMax = puissanceMax
         self.puissanceMin = puissanceMin

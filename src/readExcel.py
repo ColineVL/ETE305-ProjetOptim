@@ -1,7 +1,7 @@
 import numpy as np
 from openpyxl import load_workbook
 
-wb = load_workbook("./data/donnees optim sujet interco.xlsx")
+wb = load_workbook("./data/donnees optim sujet interco.xlsx", data_only=True)
 sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
@@ -16,6 +16,8 @@ def cleanValue(value):
         return 0
     return float(value)
 
+
+dates = [cell.value for cell in sheetNord["A"][1:nbHeures]]
 
 consoNord = np.array([cleanValue(cell.value) for cell in sheetNord["B"][1:nbHeures]])
 prodSolaireNord = [cleanValue(cell.value) for cell in sheetNord["C"][1:nbHeures]]
