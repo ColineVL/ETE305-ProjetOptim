@@ -1,6 +1,6 @@
 from zone import mesZones, ZoneName
 from readExcel import nbHeures, capaciteIntercoInitiale
-from bornesMax import effacement
+from ourValues import effacement
 
 # On vérifie que chaque heure il y a moyen de répondre à la demande
 

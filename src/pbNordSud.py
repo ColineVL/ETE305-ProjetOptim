@@ -1,14 +1,9 @@
 import pulp
 
-from display import affichageResultats
+from postTraitementFiles.postTraitement import traitementResultats
 from readExcel import nbHeures, capaciteIntercoInitiale
-from bornesMax import (
-    capaciteIntercoMax,
-    coutAugmentationInterco,
-    effacement,
-    budgetTotal,
-)
 from zone import mesZones, ZoneName
+import ourValues
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """
@@ -24,6 +19,9 @@ def main():
         == len(mesZones[ZoneName.NORD].conso)
         == nbHeures
     )
+    # On augmente un peu les consos
+    for zone in mesZones.values():
+        zone.conso = zone.conso * ourValues.facteurAugmentationConso
 
     # On crée le problème de minimisation du coût
     problem = pulp.LpProblem("NordSudAnnee", pulp.LpMinimize)
@@ -58,11 +56,13 @@ def main():
         zone.capaciteIntercoVersMoi = pulp.LpVariable(
             f"max_interco_vers_{zone.nom.name}",
             capaciteIntercoInitiale,
-            capaciteIntercoMax,
+            ourValues.capaciteIntercoMax,
         )
         # Ensuite on crée les valeurs d'interco heure par heure
         zone.intercoVersMoi = [
-            pulp.LpVariable(f"interco_vers_{zone.nom.name}_{h}", 0, capaciteIntercoMax)
+            pulp.LpVariable(
+                f"interco_vers_{zone.nom.name}_{h}", 0, ourValues.capaciteIntercoMax
+            )
             for h in range(nbHeures)
         ]
 
@@ -93,7 +93,7 @@ def main():
                 + sum(prod.production[h] for prod in zone.producteursFatal)
                 + zone.intercoVersMoi[h]
                 - mesZones[zone.autreZone()].intercoVersMoi[h]
-                + effacement
+                + ourValues.effacement
                 >= zone.conso[h]
             )
 
@@ -129,10 +129,10 @@ def main():
     problem += (
         sum(
             (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale)
-            * coutAugmentationInterco
+            * ourValues.coutAugmentationInterco
             for zone in mesZones.values()
         )
-        <= budgetTotal
+        <= ourValues.budgetTotal
     )
 
     """ Définition de l'objectif """
@@ -160,27 +160,7 @@ def main():
     assert pulp.LpStatus[problem.solve()] == "Optimal"
 
     """ Post-traitement """
-
-    # On extrait la solution du problème, on la range dans nos producteurs
-    for zone in mesZones.values():
-        for prod in zone.producteursDispatchable:
-            prod.solutionProduction = [
-                pulp.value(prod.variablesProduction[h]) for h in range(nbHeures)
-            ]
-        zone.solutionIntercoVersMoi = [
-            pulp.value(zone.intercoVersMoi[h]) for h in range(nbHeures)
-        ]
-
-    # Affichage de l'interco max
-    for zone in mesZones.values():
-        print(
-            f"Interco vers {zone.nom.name} : { pulp.value(zone.capaciteIntercoVersMoi)}"
-        )
-
-    # Quelques plots
-    affichageResultats(mesZones, nbHeures)
-
-    print(f"Cout total : {pulp.value(problem.objective)}")
+    traitementResultats(problem, mesZones, nbHeures)
 
 
 if __name__ == "__main__":

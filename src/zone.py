@@ -1,7 +1,6 @@
 from enums import ZoneName
 from producteurs import ProducteurDispatchable, tousProducteurs
 from readExcel import consoNord, consoSud, nbHeures
-from bornesMax import facteurAugmentationConso
 
 
 class Zone:
@@ -53,9 +52,10 @@ class Zone:
         return ZoneName.SUD if self.nom == ZoneName.NORD else ZoneName.NORD
 
 
-zoneNord = Zone(ZoneName.NORD, consoNord * facteurAugmentationConso)
-zoneSud = Zone(ZoneName.SUD, consoSud * facteurAugmentationConso)
-mesZones = {ZoneName.NORD: zoneNord, ZoneName.SUD: zoneSud}
+mesZones = {
+    ZoneName.NORD: Zone(ZoneName.NORD, consoNord),
+    ZoneName.SUD: Zone(ZoneName.SUD, consoSud),
+}
 
 # Division Nord / Sud des producteurs
 for prod in tousProducteurs:
