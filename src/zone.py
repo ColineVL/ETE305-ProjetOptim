@@ -1,6 +1,8 @@
-from producteurs import tousProducteurs
-from readExcel import consoNord, consoSud,nbHeures
+from enums import ZoneName
+from producteurs import ProducteurDispatchable, tousProducteurs
+from readExcel import consoNord, consoSud, nbHeures
 from bornesMax import facteurAugmentationConso
+
 
 class Zone:
     """
@@ -8,8 +10,8 @@ class Zone:
 
     Attributes
     ----------
-    nom : str
-        "Nord" ou "Sud"
+    nom : ZoneName
+        Nord ou Sud
     producteursDispatchable : array
         Tableau des producteurs de dispatchable de cette zone, de type ProducteurDispatchable
     producteursFatal : array
@@ -42,21 +44,23 @@ class Zone:
 
     def calculerProductionFatal(self):
         self.productionFatal = [
-            sum(
-                prod.production[h] for prod in self.producteursFatal
-            )
+            sum(prod.production[h] for prod in self.producteursFatal)
             for h in range(nbHeures)
         ]
 
+    def autreZone(self):
+        """Retourne l'autre zone : Sud si self == Nord"""
+        return ZoneName.SUD if self.nom == ZoneName.NORD else ZoneName.NORD
 
-zoneNord = Zone("Nord", consoNord*facteurAugmentationConso)
-zoneSud = Zone("Sud", consoSud*facteurAugmentationConso)
-mesZones = {"Nord": zoneNord, "Sud": zoneSud}
+
+zoneNord = Zone(ZoneName.NORD, consoNord * facteurAugmentationConso)
+zoneSud = Zone(ZoneName.SUD, consoSud * facteurAugmentationConso)
+mesZones = {ZoneName.NORD: zoneNord, ZoneName.SUD: zoneSud}
 
 # Division Nord / Sud des producteurs
 for prod in tousProducteurs:
     zone = mesZones[prod.zone]
-    if hasattr(prod, "type"):
+    if isinstance(prod, ProducteurDispatchable):
         zone.producteursDispatchable.append(prod)  # C'est un dispatchable
     else:
         zone.producteursFatal.append(prod)  # C'est un fatal

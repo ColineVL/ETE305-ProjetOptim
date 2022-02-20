@@ -1,4 +1,4 @@
-from zone import mesZones
+from zone import mesZones, ZoneName
 from readExcel import nbHeures, capaciteIntercoInitiale
 from bornesMax import effacement
 
@@ -6,22 +6,22 @@ from bornesMax import effacement
 
 for h in range(nbHeures):
     capaciteDispNord = sum(
-        prod.puissanceMax for prod in mesZones["Nord"].producteursDispatchable
+        prod.puissanceMax for prod in mesZones[ZoneName.NORD].producteursDispatchable
     )
     capaciteDispSud = sum(
-        prod.puissanceMax for prod in mesZones["Sud"].producteursDispatchable
+        prod.puissanceMax for prod in mesZones[ZoneName.SUD].producteursDispatchable
     )
     productionFatalNord = sum(
-        prod.production[h] for prod in mesZones["Nord"].producteursFatal
+        prod.production[h] for prod in mesZones[ZoneName.NORD].producteursFatal
     )
     productionFatalSud = sum(
-        prod.production[h] for prod in mesZones["Sud"].producteursFatal
+        prod.production[h] for prod in mesZones[ZoneName.SUD].producteursFatal
     )
     totalNord = capaciteDispNord + productionFatalNord
     totalSud = capaciteDispSud + productionFatalSud
 
-    demandeNord = mesZones["Nord"].conso[h]
-    demandeSud = mesZones["Sud"].conso[h]
+    demandeNord = mesZones[ZoneName.NORD].conso[h]
+    demandeSud = mesZones[ZoneName.SUD].conso[h]
 
     if totalSud >= demandeSud and totalNord >= demandeNord:
         # premier cas : pas besoin d'interconnexion
