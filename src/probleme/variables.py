@@ -44,3 +44,13 @@ def ajoutVariables(mesZones):
             )
             for h in range(nbHeures)
         ]
+
+    # On peut améliorer le solaire, au Sud et au Nord
+    for zone in mesZones.values():
+        for prod in zone.producteursFatal:
+            if prod.amelioration:
+                prod.capacite = pulp.LpVariable(
+                    f"amelioration_capacite_{prod.nomCentrale}",
+                    prod.amelioration.capaciteInitiale,
+                    prod.amelioration.borneMax,
+                )

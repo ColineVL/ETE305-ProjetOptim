@@ -2,11 +2,9 @@
 
 ### Par Coline
 
-- inclure data : capaciteInterco etc depuis tableau de Nicolas
+- prendre en compte l'horizon ? Vérifier les calculs de dépenses
 - construire une centrale charbon au Sud
 - construire une centrale charbon au nord
-- améliorer renouv nord
-- améliorer renouv sud
 
 ### Nicolas
 

@@ -39,7 +39,7 @@ def writeResultsInExcel(mesZones, nbHeures):
         # Données solutions
         for h in range(nbHeures):
             ws.append(
-                [dates[h]] + [prod.production[h] for prod in zone.producteursFatal]
+                [dates[h]] + [f"{prod.production[h]}" for prod in zone.producteursFatal]
             )
 
     timestamp = datetime.now().strftime("%d%m%Y-%H%M%S")

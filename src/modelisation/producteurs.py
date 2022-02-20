@@ -1,4 +1,5 @@
 from modelisation.enums import TypeEnergie, ZoneName
+from modelisation.ameliorations import ameliorations
 from modelisation.readExcel import (
     prodSolaireNord,
     prodSolaireSud,
@@ -22,6 +23,8 @@ class Producteur:
         Type d'énergie : CHARBON ou SOLAIRE par exemple
     coutMarginal : int
         Cout d'utilisation de la centrale par mégawatt et par heure, donc en € / MWh
+    amelioration : Amelioration
+        Amélioration possible pour ce producteur
     """
 
     def __init__(self, zone, nomCentrale, type):
@@ -29,6 +32,13 @@ class Producteur:
         self.nomCentrale = nomCentrale
         self.zone = zone
         self.coutMarginal = type.value
+
+        aml = [
+            elt
+            for elt in ameliorations
+            if (elt.type is self.type and elt.zone == self.zone)
+        ]
+        self.amelioration = aml[0] if aml else False
 
 
 class ProducteurDispatchable(Producteur):
@@ -103,6 +113,8 @@ class ProducteurFatal(Producteur):
         Type d'énergie : HYDRO ou EOLIEN ou BIOENERGIES ou SOLAIRE
     production : array
         Production au cours du temps, heure par heure
+    capacite : pulp.LpVariable
+        On peut améliorer la capacité du producteur : nouvelle capa en MW
     """
 
     def __init__(self, zone, nomCentrale, type, production):

@@ -2,6 +2,48 @@ from modelisation.readExcel import nbHeures, capaciteIntercoInitiale
 import modelisation.ourValues as ourValues
 
 
+def satisfactionDemande(mesZones, problem):
+    for zone in mesZones.values():
+        for h in range(nbHeures):
+            # Les producteurs fatal sont augmentés en fonction de leur amélioration
+            for prod in zone.producteursFatal:
+                if prod.amelioration:
+                    prod.production[h] = prod.production[h] * (
+                        prod.capacite * (1 / prod.amelioration.capaciteInitiale)
+                    )
+
+            problem += (
+                sum(
+                    prod.variablesProduction[h] for prod in zone.producteursDispatchable
+                )
+                + sum(prod.production[h] for prod in zone.producteursFatal)
+                + zone.intercoVersMoi[h]
+                - mesZones[zone.autreZone()].intercoVersMoi[h]
+                + ourValues.effacement
+                >= zone.conso[h]
+            )
+
+
+def respectDuBudget(mesZones, problem):
+    depenses = 0
+    # On a augmenté l'interco
+    depenses += sum(
+        (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale)
+        * ourValues.coutAugmentationInterco
+        for zone in mesZones.values()
+    )
+
+    # On a amélioré les fatal
+    for zone in mesZones.values():
+        for prod in zone.producteursFatal:
+            if prod.amelioration:
+                depenses += (
+                    prod.capacite - prod.amelioration.capaciteInitiale
+                ) * prod.amelioration.coutInvestissement
+
+    problem += depenses <= ourValues.budgetTotal
+
+
 def ajoutContraintes(mesZones, problem):
     """Ajout de contraintes"""
 
@@ -21,18 +63,6 @@ def ajoutContraintes(mesZones, problem):
 
             # Contrainte d'interconnexion maximale : la capacité d'interconnexion effective doit être réaliste
             problem += zone.intercoVersMoi[h] <= zone.capaciteIntercoVersMoi
-
-            # Contrainte de satisfaction de la demande
-            problem += (
-                sum(
-                    prod.variablesProduction[h] for prod in zone.producteursDispatchable
-                )
-                + sum(prod.production[h] for prod in zone.producteursFatal)
-                + zone.intercoVersMoi[h]
-                - mesZones[zone.autreZone()].intercoVersMoi[h]
-                + ourValues.effacement
-                >= zone.conso[h]
-            )
 
             # Contrainte de coût, on allume dans l'ordre :
             # Pour pouvoir allumer les TAC, il faut que tous les diesels soient on
@@ -61,13 +91,8 @@ def ajoutContraintes(mesZones, problem):
                         prod.variablesOnOff[t] for t in range(h, h + min_effectif)
                     )
 
+    # Contrainte de satisfaction de la demande
+    satisfactionDemande(mesZones, problem)
+
     """ Contrainte : respect du budget """
-    # On a augmenté l'interco
-    problem += (
-        sum(
-            (zone.capaciteIntercoVersMoi - capaciteIntercoInitiale)
-            * ourValues.coutAugmentationInterco
-            for zone in mesZones.values()
-        )
-        <= ourValues.budgetTotal
-    )
+    respectDuBudget(mesZones, problem)
