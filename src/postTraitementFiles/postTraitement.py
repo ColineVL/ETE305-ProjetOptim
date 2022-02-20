@@ -25,6 +25,9 @@ def traitementResultats(problem, mesZones, nbHeures):
         print(
             f"Interco vers {zone.nom.name} : { pulp.value(zone.capaciteIntercoVersMoi)}"
         )
+        for prod in zone.producteursFatal:
+            if prod.amelioration:
+                print(f"Amelioration {prod.nomCentrale} : {pulp.value(prod.capacite)}")
 
     # Quelques plots
     affichageResultats(mesZones, nbHeures)
