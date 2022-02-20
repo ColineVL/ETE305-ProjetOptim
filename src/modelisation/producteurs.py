@@ -8,7 +8,30 @@ from modelisation.readExcel import (
 )
 
 
-class ProducteurDispatchable:
+class Producteur:
+    """
+    Représente un producteur d'électricité
+
+    Attributes
+    ----------
+    zone : ZoneName
+        Nord ou Sud
+    nomCentrale : str
+        Nom de la centrale, sans espace : "Bois_Rouge_1", "La Baie"...
+    type : TypeEnergie
+        Type d'énergie : CHARBON ou SOLAIRE par exemple
+    coutMarginal : int
+        Cout d'utilisation de la centrale par mégawatt et par heure, donc en € / MWh
+    """
+
+    def __init__(self, zone, nomCentrale, type):
+        self.type = type
+        self.nomCentrale = nomCentrale
+        self.zone = zone
+        self.coutMarginal = type.value
+
+
+class ProducteurDispatchable(Producteur):
     """
     Représente un producteur d'électricité d'origine fossile, dispatchable
 
@@ -19,7 +42,7 @@ class ProducteurDispatchable:
     nomCentrale : str
         Nom de la centrale, sans espace : "Bois_Rouge_1", "La Baie"...
     type : TypeEnergie
-        Type d'énergie : charbon ou tac ou diesel
+        Type d'énergie : CHARBON ou TAC ou DIESEL
     puissanceMax : int
         Puissance maximale de la centrale, en MW
     puissanceMin : int
@@ -49,17 +72,14 @@ class ProducteurDispatchable:
         dureeMinAllumage,
         coutAllumage,
     ):
-        self.type = type
-        self.nomCentrale = nomCentrale
-        self.zone = zone
         self.puissanceMax = puissanceMax
         self.puissanceMin = puissanceMin
-        self.coutMarginal = type.value
         self.dureeMinAllumage = dureeMinAllumage
         self.variablesProduction = []
         self.variablesOnOff = []
         self.solutionProduction = []
         self.coutAllumage = coutAllumage
+        super().__init__(zone, nomCentrale, type)
 
     def calculerCoutProduction(self):
         return sum(self.variablesProduction) * self.coutMarginal
@@ -68,7 +88,7 @@ class ProducteurDispatchable:
         return self.type.meilleursTypes()
 
 
-class ProducteurFatal:
+class ProducteurFatal(Producteur):
     """
     Représente un producteur d'électricité d'origine renouvelable.
     On ne peut pas choisir la production, elle est donnée (par les conditions climatiques par exemple)
@@ -77,7 +97,7 @@ class ProducteurFatal:
     ----------
     zone : ZoneName
         Nord ou Sud
-    centrale : str
+    nomCentrale : str
         Nom de la centrale, sans espace : "Hydraulique", "Solaire"...
     type : TypeEnergie
         Type d'énergie : HYDRO ou EOLIEN ou BIOENERGIES ou SOLAIRE
@@ -85,11 +105,9 @@ class ProducteurFatal:
         Production au cours du temps, heure par heure
     """
 
-    def __init__(self, zone, centrale, type, production):
-        self.nomCentrale = centrale
-        self.zone = zone
-        self.type = type
+    def __init__(self, zone, nomCentrale, type, production):
         self.production = production
+        super().__init__(zone, nomCentrale, type)
 
 
 """ Il est temps de créer nos producteurs"""

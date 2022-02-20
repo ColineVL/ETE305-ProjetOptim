@@ -14,10 +14,10 @@ class TypeEnergie(Enum):
     TAC = 150
     DIESEL = 80
     CHARBON = 40
-    SOLAIRE = auto()
-    HYDRO = auto()
-    EOLIEN = auto()
-    BIOENERGIES = auto()
+    SOLAIRE = 0
+    HYDRO = 0
+    EOLIEN = 0
+    BIOENERGIES = 0
 
     def meilleursTypes(self):
         return [
