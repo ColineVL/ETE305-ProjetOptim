@@ -1,10 +1,6 @@
 # Idées de choses à faire
 
-### Par Coline
-
-- prendre en compte l'horizon ? Vérifier les calculs de dépenses
-- construire une centrale charbon au Sud
-- construire une centrale charbon au nord
+### Coline
 
 ### Nicolas
 
