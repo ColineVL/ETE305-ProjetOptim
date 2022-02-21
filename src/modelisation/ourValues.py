@@ -6,7 +6,7 @@ facteurAugmentationConso = 1.5
 
 # Budget à dépenser
 budgetTotal = 10_000_000  # €
-horizon = 20  # ans
+horizon = 20  # ans - dans le code je ne le prends pas en compte
 
 # Interconnexion
 # On peut l'augmenter jusqu'à une certaine valeur
