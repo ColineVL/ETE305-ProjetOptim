@@ -27,7 +27,9 @@ def traitementResultats(problem, mesZones, nbHeures):
         )
         for prod in zone.producteursFatal:
             if prod.amelioration:
-                print(f"Amelioration {prod.nomCentrale} : {pulp.value(prod.capacite)}")
+                print(
+                    f"Amelioration {prod.nomCentrale} : {pulp.value(prod.amelioration.capacite)}"
+                )
 
     # Quelques plots
     affichageResultats(mesZones, nbHeures)

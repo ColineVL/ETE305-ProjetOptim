@@ -113,8 +113,6 @@ class ProducteurFatal(Producteur):
         Type d'énergie : HYDRO ou EOLIEN ou BIOENERGIES ou SOLAIRE
     production : array
         Production au cours du temps, heure par heure
-    capacite : pulp.LpVariable
-        On peut améliorer la capacité du producteur : nouvelle capa en MW
     """
 
     def __init__(self, zone, nomCentrale, type, production):
@@ -149,3 +147,9 @@ creer(3, ZoneName.SUD, "Bois_Rouge", TypeEnergie.CHARBON, 33, 10, 6, 50000)
 creer(3, ZoneName.NORD, "Le_Gol", TypeEnergie.CHARBON, 37, 10, 6, 50000)
 creer(2, ZoneName.NORD, "La_Baie", TypeEnergie.TAC, 40, 15, 1, 2000)
 creer(12, ZoneName.NORD, "Le_Port_Est", TypeEnergie.DIESEL, 18, 0, 1, 1000)
+
+# De nouvelles usines à construire ?
+creer(3, ZoneName.SUD, "Extension_Sud_Charbon", TypeEnergie.CHARBON, 33, 10, 6, 50000)
+creer(3, ZoneName.NORD, "Extension_Nord_Charbon", TypeEnergie.CHARBON, 37, 10, 6, 50000)
+creer(2, ZoneName.SUD, "Extension_Sud_TAC", TypeEnergie.TAC, 40, 15, 1, 2000)
+creer(2, ZoneName.NORD, "Extension_Nord_TAC", TypeEnergie.TAC, 40, 15, 1, 2000)

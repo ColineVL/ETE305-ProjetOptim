@@ -79,7 +79,7 @@ ameliorations = [
     AmeliorationFatal(ZoneName.SUD, TypeEnergie.EOLIEN, 2.26941 * 10**6, 42, 16),
     # Et maintenant les dispatchables
     AmeliorationDispatchable(ZoneName.NORD, TypeEnergie.CHARBON, 2.2734171 * 10**6),
-    AmeliorationDispatchable(ZoneName.NORD, TypeEnergie.TAC, 1.169256 * 10**6),
-    AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.CHARBON, 2.2734171 * 10**6),
-    AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.TAC, 1.169256 * 10**6),
+    # AmeliorationDispatchable(ZoneName.NORD, TypeEnergie.TAC, 1.169256 * 10**6),
+    # AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.CHARBON, 2.2734171 * 10**6),
+    # AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.TAC, 1.169256 * 10**6),
 ]
