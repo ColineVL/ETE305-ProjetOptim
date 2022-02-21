@@ -41,9 +41,13 @@ def respectDuBudget(mesZones, problem):
     for zone in mesZones.values():
         for prod in zone.producteursDispatchable:
             if prod.amelioration:
-                if prod.amelioration.centraleConstruite == 1:
-                    # Cette usine a été construite et est utilisée
-                    depenses += prod.puissanceMax * prod.amelioration.coutInvestissement
+                # Si centraleConstruite == 1, cette usine a été construite et est utilisée
+                # Sinon on ne prend pas en compte la dépense
+                depenses += (
+                    prod.puissanceMax
+                    * prod.amelioration.coutInvestissement
+                    * prod.amelioration.centraleConstruite
+                )
 
     problem += depenses <= ourValues.budgetTotal
 

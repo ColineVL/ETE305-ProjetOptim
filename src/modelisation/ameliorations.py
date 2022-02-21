@@ -33,12 +33,6 @@ class AmeliorationFatal(Amelioration):
 
     Attributes
     ----------
-    type : TypeEnergie
-        Type d'énergie : HYDRO ou EOLIEN par exemple
-    zone : ZoneName
-        Nom de la zone concernée, NORD ou SUD
-    coutInvestissement : float
-        Cout d'investissement, en € par MW
     borneMax : float
         Valeur maximale de la capacité
     capaciteInitiale : float
@@ -59,12 +53,6 @@ class AmeliorationDispatchable(Amelioration):
 
     Attributes
     ----------
-    type : TypeEnergie
-        Type d'énergie : HYDRO ou EOLIEN par exemple
-    zone : ZoneName
-        Nom de la zone concernée, NORD ou SUD
-    coutInvestissement : float
-        Cout d'investissement, en € par MW
     centraleConstruite : pulp.LpVariable
         True si la centrale a été construite
     """
@@ -73,13 +61,30 @@ class AmeliorationDispatchable(Amelioration):
         super().__init__(zone, type, coutInvestissement)
 
 
-ameliorations = [
-    AmeliorationFatal(ZoneName.NORD, TypeEnergie.SOLAIRE, 4.8415086 * 10**6, 153, 58),
-    AmeliorationFatal(ZoneName.SUD, TypeEnergie.SOLAIRE, 4.8415086 * 10**6, 305, 115),
-    AmeliorationFatal(ZoneName.SUD, TypeEnergie.EOLIEN, 2.26941 * 10**6, 42, 16),
-    # Et maintenant les dispatchables
-    AmeliorationDispatchable(ZoneName.NORD, TypeEnergie.CHARBON, 2.2734171 * 10**6),
-    # AmeliorationDispatchable(ZoneName.NORD, TypeEnergie.TAC, 1.169256 * 10**6),
-    # AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.CHARBON, 2.2734171 * 10**6),
-    # AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.TAC, 1.169256 * 10**6),
-]
+amlSolaireNord = AmeliorationFatal(
+    ZoneName.NORD, TypeEnergie.SOLAIRE, 4.8415086 * 10**6, 153, 58
+)
+
+
+amlSolaireSud = AmeliorationFatal(
+    ZoneName.SUD, TypeEnergie.SOLAIRE, 4.8415086 * 10**6, 305, 115
+)
+
+amlEolienSud = AmeliorationFatal(
+    ZoneName.SUD, TypeEnergie.EOLIEN, 2.26941 * 10**6, 42, 16
+)
+
+# Et maintenant les dispatchables
+amlCharbonNord = AmeliorationDispatchable(
+    ZoneName.NORD, TypeEnergie.CHARBON, 2.2734171 * 10**6
+)
+
+amlTacNord = AmeliorationDispatchable(
+    ZoneName.NORD, TypeEnergie.TAC, 1.169256 * 10**6
+)
+
+amlCharbonSud = AmeliorationDispatchable(
+    ZoneName.SUD, TypeEnergie.CHARBON, 2.2734171 * 10**6
+)
+
+amlTacSud = AmeliorationDispatchable(ZoneName.SUD, TypeEnergie.TAC, 1.169256 * 10**6)
