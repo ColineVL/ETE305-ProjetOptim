@@ -1,5 +1,13 @@
 from modelisation.enums import TypeEnergie, ZoneName
-from modelisation.ameliorations import ameliorations
+from modelisation.ameliorations import (
+    amlSolaireNord,
+    amlCharbonSud,
+    amlTacSud,
+    amlCharbonNord,
+    amlEolienSud,
+    amlSolaireSud,
+    amlTacNord,
+)
 from modelisation.readExcel import (
     prodSolaireNord,
     prodSolaireSud,
@@ -27,18 +35,12 @@ class Producteur:
         Amélioration possible pour ce producteur
     """
 
-    def __init__(self, zone, nomCentrale, type):
+    def __init__(self, zone, nomCentrale, type, amelioration=0):
         self.type = type
         self.nomCentrale = nomCentrale
         self.zone = zone
         self.coutMarginal = type.value
-
-        aml = [
-            elt
-            for elt in ameliorations
-            if (elt.type is self.type and elt.zone == self.zone)
-        ]
-        self.amelioration = aml[0] if aml else False
+        self.amelioration = amelioration
 
 
 class ProducteurDispatchable(Producteur):
@@ -47,12 +49,6 @@ class ProducteurDispatchable(Producteur):
 
     Attributes
     ----------
-    zone : ZoneName
-        Nord ou Sud
-    nomCentrale : str
-        Nom de la centrale, sans espace : "Bois_Rouge_1", "La Baie"...
-    type : TypeEnergie
-        Type d'énergie : CHARBON ou TAC ou DIESEL
     puissanceMax : int
         Puissance maximale de la centrale, en MW
     puissanceMin : int
@@ -60,8 +56,6 @@ class ProducteurDispatchable(Producteur):
     dureeMinAllumage : int
         Durée minimale d'allumage de la centrale, en heures.
         Si on allume la centrale, elle doit rester allumer pendant un certain temps
-    coutMarginal : int
-        Cout d'utilisation de la centrale par mégawatt et par heure, donc en € / MWh
     coutAllumage : int
         Cout d'allumage de la centrale, en €
     variablesProduction : array[pulp.LpVariable]
@@ -81,6 +75,7 @@ class ProducteurDispatchable(Producteur):
         puissanceMin,
         dureeMinAllumage,
         coutAllumage,
+        amelioration=0,
     ):
         self.puissanceMax = puissanceMax
         self.puissanceMin = puissanceMin
@@ -89,7 +84,7 @@ class ProducteurDispatchable(Producteur):
         self.variablesOnOff = []
         self.solutionProduction = []
         self.coutAllumage = coutAllumage
-        super().__init__(zone, nomCentrale, type)
+        super().__init__(zone, nomCentrale, type, amelioration)
 
     def calculerCoutProduction(self):
         return sum(self.variablesProduction) * self.coutMarginal
@@ -105,21 +100,13 @@ class ProducteurFatal(Producteur):
 
     Attributes
     ----------
-    zone : ZoneName
-        Nord ou Sud
-    nomCentrale : str
-        Nom de la centrale, sans espace : "Hydraulique", "Solaire"...
-    type : TypeEnergie
-        Type d'énergie : HYDRO ou EOLIEN ou BIOENERGIES ou SOLAIRE
     production : array
         Production au cours du temps, heure par heure
-    capacite : pulp.LpVariable
-        On peut améliorer la capacité du producteur : nouvelle capa en MW
     """
 
-    def __init__(self, zone, nomCentrale, type, production):
+    def __init__(self, zone, nomCentrale, type, production, amelioration=0):
         self.production = production
-        super().__init__(zone, nomCentrale, type)
+        super().__init__(zone, nomCentrale, type, amelioration)
 
 
 """ Il est temps de créer nos producteurs"""
@@ -127,13 +114,21 @@ class ProducteurFatal(Producteur):
 # Tableau regroupant tous les producteurs, d'abord ceux d'origine fatal
 tousProducteurs = [
     ProducteurFatal(ZoneName.SUD, "Hydraulique", TypeEnergie.HYDRO, prodHydroSud),
-    ProducteurFatal(ZoneName.SUD, "Solaire_Sud", TypeEnergie.SOLAIRE, prodSolaireSud),
+    ProducteurFatal(
+        ZoneName.SUD, "Solaire_Sud", TypeEnergie.SOLAIRE, prodSolaireSud, amlSolaireSud
+    ),
     ProducteurFatal(
         ZoneName.SUD, "Bioenergies", TypeEnergie.BIOENERGIES, prodBioenergiesSud
     ),
-    ProducteurFatal(ZoneName.SUD, "Eolien", TypeEnergie.EOLIEN, prodEolienSud),
     ProducteurFatal(
-        ZoneName.NORD, "Solaire_Nord", TypeEnergie.SOLAIRE, prodSolaireNord
+        ZoneName.SUD, "Eolien", TypeEnergie.EOLIEN, prodEolienSud, amlEolienSud
+    ),
+    ProducteurFatal(
+        ZoneName.NORD,
+        "Solaire_Nord",
+        TypeEnergie.SOLAIRE,
+        prodSolaireNord,
+        amlSolaireNord,
     ),
 ]
 
@@ -149,3 +144,42 @@ creer(3, ZoneName.SUD, "Bois_Rouge", TypeEnergie.CHARBON, 33, 10, 6, 50000)
 creer(3, ZoneName.NORD, "Le_Gol", TypeEnergie.CHARBON, 37, 10, 6, 50000)
 creer(2, ZoneName.NORD, "La_Baie", TypeEnergie.TAC, 40, 15, 1, 2000)
 creer(12, ZoneName.NORD, "Le_Port_Est", TypeEnergie.DIESEL, 18, 0, 1, 1000)
+
+# De nouvelles usines à construire ?
+creer(
+    1,
+    ZoneName.SUD,
+    "Extension_Sud_Charbon",
+    TypeEnergie.CHARBON,
+    33,
+    10,
+    6,
+    50000,
+    amlCharbonSud,
+)
+# creer(
+#     3,
+#     ZoneName.SUD,
+#     "Extension_Sud_Charbon",
+#     TypeEnergie.CHARBON,
+#     33,
+#     10,
+#     6,
+#     50000,
+#     amlCharbonSud,
+# )
+# creer(
+#     3,
+#     ZoneName.NORD,
+#     "Extension_Nord_Charbon",
+#     TypeEnergie.CHARBON,
+#     37,
+#     10,
+#     6,
+#     50000,
+#     amlCharbonNord,
+# )
+# creer(2, ZoneName.SUD, "Extension_Sud_TAC", TypeEnergie.TAC, 40, 15, 1, 2000, amlTacSud)
+# creer(
+#     2, ZoneName.NORD, "Extension_Nord_TAC", TypeEnergie.TAC, 40, 15, 1, 2000, amlTacNord
+# )

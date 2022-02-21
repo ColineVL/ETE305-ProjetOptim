@@ -23,6 +23,8 @@ class Zone:
         Capacité de l'interconnexion de l'autre zone vers moi
     intercoVersMoi : array[pulp.LpVariable]
         Tableau de variables pulp : intercoVersMoi[h] = ce que m'envoie l'autre zone à l'heure h
+    solutionCapaciteIntercoVersMoi : float
+        Solution de capacité de l'interconnexion de l'autre zone vers moi
     solutionIntercoVersMoi : array[float]
         Tableau flottants, valeur de l'interco à chaque h
     """
@@ -36,16 +38,13 @@ class Zone:
         self.solutionIntercoVersMoi = []
         self.productionFatal = []
 
+    def __repr__(self):
+        return f"{self.nom}"
+
     def calculerCoutProductionZone(self):
         return sum(
             prod.calculerCoutProduction() for prod in self.producteursDispatchable
         )
-
-    def calculerProductionFatal(self):
-        self.productionFatal = [
-            sum(prod.production[h] for prod in self.producteursFatal)
-            for h in range(nbHeures)
-        ]
 
     def autreZone(self):
         """Retourne l'autre zone : Sud si self == Nord"""
@@ -64,7 +63,3 @@ for prod in tousProducteurs:
         zone.producteursDispatchable.append(prod)  # C'est un dispatchable
     else:
         zone.producteursFatal.append(prod)  # C'est un fatal
-
-# Calcul fatal
-for zone in mesZones.values():
-    zone.calculerProductionFatal()
