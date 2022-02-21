@@ -19,3 +19,5 @@ trouver des valeurs de
 
 Post-traitement : améliorer les graphes
 Utiliser mon csv solution pour plot de jolis trucs
+
+Afficher les usines construites ? Regarder où on dépense ?

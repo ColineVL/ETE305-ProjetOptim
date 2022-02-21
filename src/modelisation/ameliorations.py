@@ -39,6 +39,8 @@ class AmeliorationFatal(Amelioration):
        Valeur initiale de la capacité
     capacite : pulp.LpVariable
         On peut améliorer la capacité du producteur : nouvelle capa en MW
+    solutionCapacite : float
+        Nouvelle capa en MW décidée par pulp
     """
 
     def __init__(self, zone, type, coutInvestissement, borneMax, capaciteInitiale):
@@ -54,7 +56,9 @@ class AmeliorationDispatchable(Amelioration):
     Attributes
     ----------
     centraleConstruite : pulp.LpVariable
-        True si la centrale a été construite
+        1 si la centrale a été construite
+    solutionCentraleConstruite : int
+        1 si la centrale a été construite, solution décidée par pulp
     """
 
     def __init__(self, zone, type, coutInvestissement):

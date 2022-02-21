@@ -1,34 +1,40 @@
 import pulp
+
 from postTraitementFiles.display import affichageResultats
-from postTraitementFiles import writeExcel
+from postTraitementFiles.extractionSolutions import extraireSolutions
+from postTraitementFiles.writeExcel import writeResultsInExcel
 
 
 def traitementResultats(problem, mesZones, nbHeures):
 
     # On extrait la solution du problème, on la range dans nos producteurs
-    for zone in mesZones.values():
-        for prod in zone.producteursDispatchable:
-            prod.solutionProduction = [
-                pulp.value(prod.variablesProduction[h]) for h in range(nbHeures)
-            ]
-        zone.solutionIntercoVersMoi = [
-            pulp.value(zone.intercoVersMoi[h]) for h in range(nbHeures)
-        ]
+    extraireSolutions(mesZones, nbHeures)
 
     # On note les solutions dans un fichier excel
-    writeExcel.writeResultsInExcel(mesZones, nbHeures)
+    writeResultsInExcel(mesZones, nbHeures)
 
-    print(f"Cout total : {pulp.value(problem.objective)}")
+    print(f"Cout total : {pulp.value(problem.objective)}\n")
 
     # Affichage de l'interco max
     for zone in mesZones.values():
-        print(
-            f"Interco vers {zone.nom.name} : { pulp.value(zone.capaciteIntercoVersMoi)}"
-        )
+        print(f"Interco vers {zone.nom.name} : { zone.solutionCapaciteIntercoVersMoi}")
+    print("\n")
+
+    # Affichage des constructions de fatal
+    for zone in mesZones.values():
         for prod in zone.producteursFatal:
             if prod.amelioration:
                 print(
-                    f"Amelioration {prod.nomCentrale} : {pulp.value(prod.amelioration.capacite)}"
+                    f"Amelioration {prod.nomCentrale} : {prod.amelioration.solutionCapacite}"
+                )
+    print("\n")
+
+    # Affichage des constructions de dispatchable
+    for zone in mesZones.values():
+        for prod in zone.producteursDispatchable:
+            if prod.amelioration:
+                print(
+                    f"Amelioration {prod.nomCentrale} : {prod.amelioration.solutionCentraleConstruite}"
                 )
 
     # Quelques plots

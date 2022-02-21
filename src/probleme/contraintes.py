@@ -3,16 +3,18 @@ import modelisation.ourValues as ourValues
 
 
 def satisfactionDemande(zone, h, problem, autreZone):
-    # Les producteurs fatal sont augmentés en fonction de leur amélioration
-    for prod in zone.producteursFatal:
-        if prod.amelioration:
-            prod.production[h] = prod.production[h] * (
-                prod.amelioration.capacite * (1 / prod.amelioration.capaciteInitiale)
-            )
-
     problem += (
         sum(prod.variablesProduction[h] for prod in zone.producteursDispatchable)
-        + sum(prod.production[h] for prod in zone.producteursFatal)
+        + sum(
+            # Les producteurs fatal sont augmentés en fonction de leur amélioration
+            prod.production[h]
+            * (
+                (prod.amelioration.capacite * (1 / prod.amelioration.capaciteInitiale))
+                if prod.amelioration
+                else 1
+            )
+            for prod in zone.producteursFatal
+        )
         + zone.intercoVersMoi[h]
         - autreZone.intercoVersMoi[h]
         + ourValues.effacement

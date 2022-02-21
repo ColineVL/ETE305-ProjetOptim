@@ -7,7 +7,21 @@ def affichageResultats(mesZones, nbHeures):
 
     for zone in mesZones.values():
         # Energie renouvelable
-        # on a deja zone.productionFatal
+        # Les producteurs fatal sont augmentés en fonction de leur amélioration
+        facteursAugmentation = [
+            prod.amelioration.solutionCapacite / prod.amelioration.capaciteInitiale
+            if prod.amelioration
+            else 1
+            for prod in zone.producteursFatal
+        ]
+
+        productionFatal = [
+            sum(
+                prod.production[h] * facteursAugmentation[index]
+                for index, prod in enumerate(zone.producteursFatal)
+            )
+            for h in range(nbHeures)
+        ]
 
         # Interco
         IntercoZone = [
@@ -58,7 +72,7 @@ def affichageResultats(mesZones, nbHeures):
         )
 
         # Production Fatal
-        Niveau1 = [IntercoZone[h] + zone.productionFatal[h] for h in range(nbHeures)]
+        Niveau1 = [IntercoZone[h] + productionFatal[h] for h in range(nbHeures)]
         plt.fill_between(
             range(nbHeures),
             IntercoZone,
@@ -69,13 +83,13 @@ def affichageResultats(mesZones, nbHeures):
 
         # TAC
         Niveau2 = [
-            IntercoZone[h] + zone.productionFatal[h] + tac[h] for h in range(nbHeures)
+            IntercoZone[h] + productionFatal[h] + tac[h] for h in range(nbHeures)
         ]
         plt.fill_between(range(nbHeures), Niveau1, Niveau2, color="green", label=f"TAC")
 
         # Diesel
         Niveau3 = [
-            IntercoZone[h] + zone.productionFatal[h] + tac[h] + diesel[h]
+            IntercoZone[h] + productionFatal[h] + tac[h] + diesel[h]
             for h in range(nbHeures)
         ]
         plt.fill_between(
@@ -84,7 +98,7 @@ def affichageResultats(mesZones, nbHeures):
 
         # Charbon
         Niveau4 = [
-            IntercoZone[h] + zone.productionFatal[h] + tac[h] + diesel[h] + charbon[h]
+            IntercoZone[h] + productionFatal[h] + tac[h] + diesel[h] + charbon[h]
             for h in range(nbHeures)
         ]
         plt.fill_between(
