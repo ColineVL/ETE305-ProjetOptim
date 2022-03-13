@@ -17,4 +17,4 @@ pip install -r requirements.txt
 python src\probleme\pbNordSud.py
 ```
 
-En fonction de votre OS et de votre version de Python, il faudra peut-être changer la commande en `python3` ou mettre des / au lieu des \.
+En fonction de votre OS et de votre version de Python, il faudra peut-être changer la commande en `python3` ou mettre des `/` au lieu des `\`.
