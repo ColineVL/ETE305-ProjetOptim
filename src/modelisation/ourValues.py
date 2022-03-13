@@ -1,14 +1,13 @@
-# Effacement autorisé
+# Effacement autorisé en MW
 effacement = 5
 
 # Augmentation de consommation
-facteurAugmentationConso = 1.5
+facteurAugmentationConso = 1.5  # FIXME valeur à définir
 
 # Budget à dépenser
-budgetTotal = 10_000_000  # €
-horizon = 20  # ans - dans le code je ne le prends pas en compte FIXME
+budgetTotal = 10_000_000  # en € # FIXME valeur à définir
 
 # Interconnexion
 # On peut l'augmenter jusqu'à une certaine valeur
-capaciteIntercoMax = 500  # MW # FIXME
-coutAugmentationInterco = 1  # € par MW supplémentaire # FIXME
+capaciteIntercoMax = 500  # MW # FIXME valeur à définir
+coutAugmentationInterco = 1  # € par MW supplémentaire # FIXME valeur à définir

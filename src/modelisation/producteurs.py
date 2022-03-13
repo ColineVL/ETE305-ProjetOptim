@@ -157,6 +157,7 @@ creer(
     50000,
     amlCharbonSud,
 )
+# FIXME combien d'usines veut-on créer ?
 # creer(
 #     3,
 #     ZoneName.SUD,
