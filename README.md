@@ -2,9 +2,19 @@
 
 Projet optimisation de ETE-305
 
-## Hypothèses
+## Pour le lancer
 
-Pas de durée minimale entre marche et arrêt  
-Pas de coût au démarrage
+### Installer les modules
 
-Dans un premier temps pas de nouveaux investissements
+Dans la console, déplacez-vous dans le dossier ETE305-ProjetOptim.
+
+```bash
+pip install -r requirements.txt
+```
+
+### Lancer le code
+```bash
+python src\probleme\pbNordSud.py
+```
+
+En fonction de votre OS et de votre version de Python, il faudra peut-être changer la commande en `python3` ou mettre des `/` au lieu des `\`.
