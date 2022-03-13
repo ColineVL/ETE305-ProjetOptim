@@ -15,9 +15,6 @@ class Zone:
         Tableau des producteurs de dispatchable de cette zone, de type ProducteurDispatchable
     producteursFatal : array
         Tableau des producteurs de fatal de cette zone, de type ProducteurFatal
-    productionFatal : array[float]
-        Total à chaque heure des productions de fatal
-        FIXME utilisé encore ?
     conso : array
         Tableau de la consommation dans cette zone, heure par heure
     capaciteIntercoVersMoi : pulp.LpVariable
@@ -37,7 +34,6 @@ class Zone:
         self.conso = conso
         self.intercoVersMoi = []
         self.solutionIntercoVersMoi = []
-        self.productionFatal = []
 
     def __repr__(self):
         return f"{self.nom}"
