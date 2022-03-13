@@ -17,6 +17,7 @@ class Zone:
         Tableau des producteurs de fatal de cette zone, de type ProducteurFatal
     productionFatal : array[float]
         Total à chaque heure des productions de fatal
+        FIXME utilisé encore ?
     conso : array
         Tableau de la consommation dans cette zone, heure par heure
     capaciteIntercoVersMoi : pulp.LpVariable

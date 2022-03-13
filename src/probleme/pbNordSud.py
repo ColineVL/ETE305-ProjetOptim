@@ -1,10 +1,17 @@
 import pulp
+import sys, os
 
+# Add src to the path so that Python finds our modules
+src_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(src_dir)
+
+# Import our files
 from postTraitementFiles import postTraitement
 from modelisation.readExcel import nbHeures
 from modelisation.zones import mesZones, ZoneName
 import modelisation.ourValues as ourValues
 from probleme import variables, contraintes, objectif
+
 
 """ Problème version 4 """
 """ Le Sud et le Nord ont des producteurs différents """
