@@ -79,14 +79,6 @@ amlEolienSud = AmeliorationFatal(
 )
 
 # Et maintenant les dispatchables
-amlCharbonNord = AmeliorationDispatchable(
-    ZoneName.NORD, TypeEnergie.CHARBON, 2.2734171 * 10**6
-)
-
-amlTacNord = AmeliorationDispatchable(
-    ZoneName.NORD, TypeEnergie.TAC, 1.169256 * 10**6
-)
-
 amlCharbonSud = AmeliorationDispatchable(
     ZoneName.SUD, TypeEnergie.CHARBON, 2.2734171 * 10**6
 )

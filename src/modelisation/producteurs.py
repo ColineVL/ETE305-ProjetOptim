@@ -3,10 +3,8 @@ from modelisation.ameliorations import (
     amlSolaireNord,
     amlCharbonSud,
     amlTacSud,
-    amlCharbonNord,
     amlEolienSud,
     amlSolaireSud,
-    amlTacNord,
 )
 from modelisation.readExcel import (
     prodSolaireNord,
@@ -146,10 +144,8 @@ creer(2, ZoneName.NORD, "La_Baie", TypeEnergie.TAC, 40, 15, 1, 2000)
 creer(12, ZoneName.NORD, "Le_Port_Est", TypeEnergie.DIESEL, 18, 0, 1, 1000)
 
 # De nouvelles usines à construire ?
-# FIXME combien d'usines veut-on créer ?
 creer(
-    # 3,
-    1,
+    3,
     ZoneName.SUD,
     "Extension_Sud_Charbon",
     TypeEnergie.CHARBON,
@@ -159,18 +155,4 @@ creer(
     50000,
     amlCharbonSud,
 )
-# creer(
-#     3,
-#     ZoneName.NORD,
-#     "Extension_Nord_Charbon",
-#     TypeEnergie.CHARBON,
-#     37,
-#     10,
-#     6,
-#     50000,
-#     amlCharbonNord,
-# )
-# creer(2, ZoneName.SUD, "Extension_Sud_TAC", TypeEnergie.TAC, 40, 15, 1, 2000, amlTacSud)
-# creer(
-#     2, ZoneName.NORD, "Extension_Nord_TAC", TypeEnergie.TAC, 40, 15, 1, 2000, amlTacNord
-# )
+creer(2, ZoneName.SUD, "Extension_Sud_TAC", TypeEnergie.TAC, 40, 15, 1, 2000, amlTacSud)
