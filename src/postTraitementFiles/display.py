@@ -65,6 +65,10 @@ def affichageResultats(mesZones, nbHeures):
 
         # Demande
         plt.plot(zone.conso, "b", label=f"Demande {zone.nom.name}")
+        plt.xlabel("Temps [heure]")
+        plt.ylabel("Puissance [MW]")
+        plt.title(f"Répartition de la production d'électricité au {zone.nom.name}")
+        plt.grid()
 
         # Interco
         plt.fill_between(
@@ -95,6 +99,7 @@ def affichageResultats(mesZones, nbHeures):
         plt.fill_between(
             range(nbHeures), Niveau2, Niveau3, color="yellow", label=f"Diesel"
         )
+
 
         # Charbon
         Niveau4 = [
