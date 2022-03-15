@@ -2,7 +2,7 @@
 effacement = 5
 
 # Augmentation de consommation
-facteurAugmentationConso = 1.5  # FIXME valeur à définir
+facteurAugmentationConso = 1.0  # FIXME valeur à définir
 
 # Budget à dépenser
 budgetTotal = 10_000_000  # en € # FIXME valeur à définir

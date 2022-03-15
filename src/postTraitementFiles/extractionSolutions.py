@@ -29,4 +29,3 @@ def extraireSolutions(mesZones, nbHeures):
                 prodFatal.amelioration.solutionCapacite = pulp.value(
                     prodFatal.amelioration.capacite
                 )
-                print(prodFatal.amelioration.solutionCapacite)
