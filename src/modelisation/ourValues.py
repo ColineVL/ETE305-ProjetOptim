@@ -1,5 +1,5 @@
 # Effacement autorisé en MW
-effacement = 5
+effacement = 0
 
 # Augmentation de consommation
 facteurAugmentationConso = 1.2
