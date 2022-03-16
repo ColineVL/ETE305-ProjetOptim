@@ -6,7 +6,7 @@ sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
 # ICI le scénario qu'on veut tester, à modifier !
-scenario = 0
+scenario = 2
 # Scénario 0 : n premières heures
 # Scénario 1 : mois de mai
 # Scénario 2 : mois de décembre
