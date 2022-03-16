@@ -6,9 +6,9 @@ sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
 
-# nbHeures = len(sheetNord["B"])
+nbHeures = len(sheetNord["B"])
 # nbHeures = 24 * 30  # 1 mois
-nbHeures = 24
+# nbHeures = 24 * 65
 # FIXME à modifier pendant les tests
 
 

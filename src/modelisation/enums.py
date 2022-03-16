@@ -9,7 +9,7 @@ class ZoneName(Enum):
 
 
 class TypeEnergie(Enum):
-    """Types d'énergie, le coût est différent selon le type"""
+    """Types d'énergie, le coût est différent selon le type (en €/MW)"""
 
     TAC = 150
     DIESEL = 80

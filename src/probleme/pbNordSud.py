@@ -44,8 +44,9 @@ def main():
     objectif.ajouterObjectif(mesZones, problem)
 
     """ Résolution du problème """
+    status = problem.solve(pulp.PULP_CBC_CMD(msg=1))
     # On vérifie que pulp arrive à trouver une solution
-    assert pulp.LpStatus[problem.solve()] == "Optimal"
+    assert pulp.LpStatus[status] == "Optimal"
 
     """ Post-traitement """
     postTraitement.traitementResultats(problem, mesZones, nbHeures)

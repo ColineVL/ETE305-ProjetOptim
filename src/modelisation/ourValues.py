@@ -2,12 +2,12 @@
 effacement = 5
 
 # Augmentation de consommation
-facteurAugmentationConso = 1.2  # FIXME valeur à définir
+facteurAugmentationConso = 1.2
 
 # Budget à dépenser
-budgetTotal = 10_000_000_000_000_000_000  # en € # FIXME valeur à définir
+budgetTotal = 470 * 10**6  # en €
 
 # Interconnexion
 # On peut l'augmenter jusqu'à une certaine valeur
-capaciteIntercoMax = 500  # MW # FIXME valeur à définir
-coutAugmentationInterco = 1  # € par MW supplémentaire # FIXME valeur à définir
+capaciteIntercoMax = 200  # MW
+coutAugmentationInterco = 0.4 * 10**6  # € par MW supplémentaire
