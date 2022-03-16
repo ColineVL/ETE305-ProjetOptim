@@ -6,7 +6,7 @@ sheetNord = wb[wb.sheetnames[1]]
 sheetSud = wb[wb.sheetnames[2]]
 
 # ICI le scénario qu'on veut tester, à modifier !
-scenario = 2
+scenario = 3
 # Scénario 0 : n premières heures
 # Scénario 1 : mois de mai
 # Scénario 2 : mois de décembre
@@ -28,6 +28,16 @@ if scenario == 2:
     # MOIS DE DECEMBRE
     debut = 8013
     fin = 8760
+
+if scenario == 3:
+    # MOIS DE MAI / JUIN
+    debut = 2877
+    fin = 4340
+
+if scenario == 4:
+    # MOIS DE NOVEMBRE / DECEMBRE
+    debut = 7293
+    fin = 8013
 
 
 def cleanValue(value):
